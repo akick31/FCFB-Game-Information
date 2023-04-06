@@ -39,17 +39,25 @@ async def gather_ongoing_games(r, config_data):
                     game_info = get_game_information(r, season, "FBS", game)
                     if game_info is not False and not await check_if_exists_in_table(config_data, "ongoing_games",
                                                                                      "game_id", game_info["game_id"]):
-                        result = await add_values_to_table(config_data, "ongoing_games", "game_id", game_info)
-                        if result:
-                            print("Added FBS game " + game_info["game_id"] + " to the table between " + game_info["home_team"] +
-                                  " and " + game_info["away_team"])
+                        if game_info["game_id"] is None:
+                            print("Game ID is none for FBS game between " + game_info["home_team"] + " and " +
+                                  game_info["away_team"])
+                        else:
+                            result = await add_values_to_table(config_data, "ongoing_games", "game_id", game_info)
+                            if result:
+                                print("Added FBS game " + game_info["game_id"] + " to the table between " + game_info["home_team"] +
+                                      " and " + game_info["away_team"])
         if fcs_games is not None:
             for game in fcs_games:
                 if game is not None:
                     game_info = get_game_information(r, season, "FBS", game)
                     if game_info is not False and not await check_if_exists_in_table(config_data, "ongoing_games",
                                                                                      "game_id", game_info["game_id"]):
-                        result = await add_values_to_table(config_data, "ongoing_games", "game_id", game_info)
-                        if result:
-                            print("Added FCS game " + game_info["game_id"] + " to the table between " + game_info["home_team"] +
-                                  " and " + game_info["away_team"])
+                        if game_info["game_id"] is None:
+                            print("Game ID is none for FBS game between " + game_info["home_team"] + " and " +
+                                  game_info["away_team"])
+                        else:
+                            result = await add_values_to_table(config_data, "ongoing_games", "game_id", game_info)
+                            if result:
+                                print("Added FCS game " + game_info["game_id"] + " to the table between " + game_info["home_team"] +
+                                      " and " + game_info["away_team"])
