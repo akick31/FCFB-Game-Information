@@ -1,3 +1,6 @@
+import sys
+sys.path.append("..")
+
 from game_historian.database.communicate_with_database import *
 from game_historian.games.scrape_game_info import get_game_information
 

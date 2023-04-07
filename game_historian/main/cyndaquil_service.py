@@ -3,13 +3,11 @@ Maintain the ongoing games table
 """
 import json
 import os
-import sys
 import asyncio
-
-from game_historian.database.communicate_with_database import retrieve_current_season_from_table, get_num_rows_in_table
-
+import sys
 sys.path.append("..")
 
+from game_historian.database.communicate_with_database import retrieve_current_season_from_table, get_num_rows_in_table
 from game_historian.games.manage_games import manage_ongoing_games
 from game_historian.reddit.reddit_administration import login_reddit
 
