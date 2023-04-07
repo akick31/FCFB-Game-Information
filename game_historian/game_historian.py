@@ -4,11 +4,9 @@ Maintain the ongoing games table
 import json
 import asyncio
 import pathlib
-import sys
-sys.path.append("")
 
-from game_historian.games.manage_games import add_ongoing_games, update_ongoing_games
-from game_historian.reddit.reddit_administration import login_reddit
+from games.manage_games import add_ongoing_games, update_ongoing_games
+from reddit.reddit_administration import login_reddit
 
 
 async def game_historian(r):
