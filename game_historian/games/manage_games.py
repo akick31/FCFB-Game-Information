@@ -84,7 +84,7 @@ async def add_ongoing_games(r, config_data):
             if game_info:
                 if game_info["game_id"] not in existing_game_ids:
                     if game_info["game_id"] is None:
-                        print("Game ID is none for game between " + game_info["home_team"] + " and " + game_info["away_team"])
+                        print("Game ID is none for the game between " + game_info["home_team"] + " and " + game_info["away_team"])
                     else:
                         result = await add_to_table(config_data, "ongoing_games", "game_id", game_info)
                         if result:
