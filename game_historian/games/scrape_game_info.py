@@ -2,8 +2,6 @@ from datetime import datetime
 
 import sys
 sys.path.append("..")
-from game_historian.database.communicate_with_database import check_if_exists_in_table
-
 
 def get_game_information(r, season, subdivision, game, from_wiki):
     """
