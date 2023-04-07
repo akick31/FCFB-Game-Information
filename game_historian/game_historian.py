@@ -18,9 +18,10 @@ async def game_historian(r):
 
     while True:
         from games.manage_games import add_ongoing_games, update_ongoing_games
-        tasks = [add_ongoing_games(r, config_data),
-                 update_ongoing_games(r, config_data)]
-        await asyncio.gather(*tasks)
+
+        task1 = asyncio.create_task(add_ongoing_games(r, config_data))
+        task2 = asyncio.create_task(update_ongoing_games(r, config_data))
+        await asyncio.wait([task1, task2], return_when=asyncio.FIRST_EXCEPTION)
 
 
 if __name__ == '__main__':
