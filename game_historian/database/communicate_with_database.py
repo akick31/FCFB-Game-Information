@@ -4,7 +4,7 @@ sys.path.append("..")
 from game_historian.database.connect_to_database import connect_to_db
 
 
-async def add_values_to_table(config_data, table_name, where_column, values_json):
+async def add_to_table(config_data, table_name, where_column, values_json):
     """
     Add values to a table
 
@@ -47,14 +47,12 @@ async def add_values_to_table(config_data, table_name, where_column, values_json
     return True
 
 
-async def update_table(config_data, table_name, column_name, value, where_column, where_value):
+async def remove_from_table(config_data, table_name, where_column, where_value):
     """
-    Update a value in a table
+    Remove a value from a table
 
     :param config_data:
     :param table_name:
-    :param column_name:
-    :param value:
     :param where_column:
     :param where_value:
     :return:
@@ -68,16 +66,52 @@ async def update_table(config_data, table_name, column_name, value, where_column
 
     try:
         cursor = db.cursor()
-        cursor.execute("UPDATE " + table_name +
-                       " SET " + column_name + "=" + value +
-                       " WHERE " + where_column + "=" + where_value)
+        cursor.execute("DELETE FROM " + table_name + " WHERE " + where_column + " = '" + str(where_value) + "'")
         db.commit()
-        db.close()
-        return True
     except Exception as e:
-        print("Error updating value in database table " + table_name + ": " + str(e))
+        print("Error removing value from database table " + table_name + ": " + str(e))
         db.close()
         return None
+
+    db.close()
+    return True
+
+
+async def update_table(config_data, table_name, where_column, values_json):
+    """
+    Update a value in a table
+
+    :param config_data:
+    :param table_name:
+    :param where_column:
+    :param values_json:
+    :return:
+    """
+
+    # Connect to the database
+    db = await connect_to_db(config_data)
+    if db is None:
+        print("Error connecting to the database, please try again later")
+        return False
+
+    try:
+        where_value = values_json[where_column]
+        for column, value in values_json.items():
+            cursor = db.cursor()
+            if isinstance(value, int) or isinstance(value, float):
+                cursor.execute("UPDATE " + table_name + " SET " + column + "=" + str(value) + " " +
+                               "WHERE " + where_column + " = '" + str(where_value) + "'")
+            else:
+                cursor.execute("UPDATE " + table_name + " SET " + column + "='" + value + "'" +
+                               "WHERE " + where_column + " = '" + str(where_value) + "'")
+            db.commit()
+    except Exception as e:
+        print("Error adding value to database table " + table_name + ": " + str(e))
+        db.close()
+        return None
+
+    db.close()
+    return True
 
 
 async def retrieve_row_from_table(config_data, table_name, where_column, where_value):
@@ -166,5 +200,32 @@ async def check_if_exists_in_table(config_data, table_name, column_name, value):
             return True
     except Exception as e:
         print("Error checking if value exists in database table " + table_name + ": " + str(e))
+        db.close()
+        return None
+
+
+async def get_num_rows_in_table(config_data, table_name):
+    """
+    Return the number of rows in a table
+
+    :param config_data:
+    :param table_name:
+    :return:
+    """
+
+    # Connect to the database
+    db = await connect_to_db(config_data)
+    if db is None:
+        print("Error connecting to the database, please try again later")
+        return False
+
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM " + table_name)
+        row = cursor.fetchall()
+        db.close()
+        return len(row)
+    except Exception as e:
+        print("Error retrieving number of rows in database table " + table_name + ": " + str(e))
         db.close()
         return None
