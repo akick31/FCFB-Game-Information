@@ -56,6 +56,7 @@ def get_game_information(r, season, subdivision, game):
             'away_record': 'none',
             'gist_url': 'none',
             'win_probability': 'none',
+            'waiting_on': 'none',
             'is_final': 'none'
         }
 
@@ -91,6 +92,7 @@ def get_game_information(r, season, subdivision, game):
         game_info['away_record'] = get_away_record(submission_title)
         game_info['gist_url'] = get_gist_url_from_game_thread(submission_body)
         game_info['win_probability'] = 0.0
+        game_info['waiting_on'] = get_waiting_on(submission_body, home_coach, away_coach, home_team, away_team)
         if "Game complete" not in submission_body or "Unable to generate play list" in submission_body:
             game_info['is_final'] = 0
         else:
