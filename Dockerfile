@@ -17,4 +17,4 @@ ADD game_historian/main/quilava_service.py /
 ADD game_historian/main/typhlosion_service.py /
 
 # Run
-CMD [ "python", "/pong/cyndaquil_service.py" ]
+CMD [ "python", "/game_historian/main/cyndaquil_service.py" ]
