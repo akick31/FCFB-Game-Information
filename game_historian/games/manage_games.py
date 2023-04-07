@@ -1,8 +1,27 @@
+import concurrent.futures
 import sys
+import asyncio
 sys.path.append("..")
 
 from game_historian.database.communicate_with_database import *
 from game_historian.games.scrape_game_info import get_game_information
+
+
+# Define a coroutine function to get game information
+async def get_game_info(r, season, subdivison, game, from_wiki):
+    """
+    Gets the game information for a game asynchronously.
+
+    :param r:
+    :param season:
+    :param subdivison:
+    :param game:
+    :param from_wiki:
+    :return:
+    """
+
+    game_info = get_game_information(r, season, subdivison, game, from_wiki)
+    return game_info
 
 
 async def add_ongoing_games(r, config_data, fbs_games, fcs_games, season):
@@ -16,49 +35,29 @@ async def add_ongoing_games(r, config_data, fbs_games, fcs_games, season):
     :param season: The current season
     """
 
-    # Get set of existing game IDs in the table
-    existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games", "game_id"))
-
-    # Loop through all FBS games and add them in the table
+    # Retrieve all FBS and FCS games in parallel
+    tasks = []
     if fbs_games is not None:
-        for game in fbs_games:
-            if game is not None:
-                # Get information about the game
-                game_info = get_game_information(r, season, "FBS", game, True)
-                if game_info:
-                    # Check if the game already exists in the table
-                    if game_info["game_id"] not in existing_game_ids:
-                        if game_info["game_id"] is None:
-                            print("Game ID is none for FBS game between " + game_info["home_team"] + " and " +
-                                  game_info["away_team"])
-                        else:
-                            # Add the game to the table
-                            result = await add_to_table(config_data, "ongoing_games", "game_id", game_info)
-                            if result:
-                                print("Added FBS game " + game_info["game_id"] + " to the table between " +
-                                      game_info["home_team"] + " and " + game_info["away_team"])
-    # Loop through all FCS games and add/update them in the table
+        tasks.extend([get_game_info(r, season, "FBS", game, True) for game in fbs_games if game is not None])
     if fcs_games is not None:
-        for game in fcs_games:
-            if game is not None:
-                # Get information about the game
-                game_info = get_game_information(r, season, "FCS", game, True)
-                if game_info:
-                    # Check if the game already exists in the table
-                    if game_info["game_id"] not in existing_game_ids:
-                        if game_info["game_id"] is None:
-                            # If the game ID is None, print an error message
-                            print("Game ID is none for FCS game between " + game_info["home_team"] + " and " +
-                                  game_info["away_team"])
-                        else:
-                            # Add the game to the table
-                            result = await add_to_table(config_data, "ongoing_games", "game_id", game_info)
-                            if result:
-                                print("Added FCS game " + game_info["game_id"] + " to the table between " +
-                                      game_info["home_team"] + " and " + game_info["away_team"])
-    else:
-        print("No new games to add or update in the table")
-        return False
+        tasks.extend([get_game_info(r, season, "FCS", game, True) for game in fcs_games if game is not None])
+    game_information_list = await asyncio.gather(*tasks)
+
+    # Loop through all game information and add the games in the table
+    existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games", "game_id"))
+    for game_info in game_information_list:
+        if game_info:
+            if game_info["game_id"] not in existing_game_ids:
+                if game_info["game_id"] is None:
+                    print("Game ID is none for game between " + game_info["home_team"] + " and " + game_info["away_team"])
+                else:
+                    result = await add_to_table(config_data, "ongoing_games", "game_id", game_info)
+                    if result:
+                        print("Added game " + game_info["game_id"] + " to the table between " + game_info["home_team"] +
+                              " and " + game_info["away_team"])
+        else:
+            print("Failed to get game information")
+
     return True
 
 
@@ -72,12 +71,18 @@ async def update_ongoing_games(r, config_data, games_in_table, season):
     :param season: The current season
     """
 
-    # Loop through all FBS games and add/update them in the table
-    for game in games_in_table:
-        subdivision = game[27]
-        if game is not None:
-            # Get information about the game
-            game_info = get_game_information(r, season, subdivision, game, False)
+    # Loop through all games and update them in the table
+    with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+        future_to_game = {}
+        for game in games_in_table:
+            subdivision = game[27]
+            if game is not None:
+                future = executor.submit(get_game_information, r, season, subdivision, game, False)
+                future_to_game[future] = game
+
+        for future in concurrent.futures.as_completed(future_to_game):
+            game = future_to_game[future]
+            game_info = future.result()
             if game_info and game_info["game_id"] is not None:
                 if game_info["is_final"] == 1:
                     # If the game is final, remove it from the table and add it to games table
