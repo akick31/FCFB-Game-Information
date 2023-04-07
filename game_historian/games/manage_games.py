@@ -90,6 +90,8 @@ async def add_ongoing_games(r, config_data):
                         if result:
                             print("Added game " + game_info["game_id"] + " to the table between " + game_info["home_team"] +
                                   " and " + game_info["away_team"])
+                else:
+                    print("Game " + game_info["game_id"] + " already exists in the table")
             else:
                 print("Failed to get game information")
 
