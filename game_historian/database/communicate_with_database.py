@@ -256,3 +256,32 @@ async def get_all_rows_in_table(config_data, table_name):
         print("Error retrieving all rows in database table " + table_name + ": " + str(e))
         db.close()
         return None
+
+
+async def get_all_values_in_column_from_table(config_data, table_name, column_name):
+    """
+    Return all values in a column from a table
+
+    :param config_data:
+    :param table_name:
+    :param column_name:
+    :return:
+    """
+
+    # Connect to the database
+    db = await connect_to_db(config_data)
+    if db is None:
+        print("Error connecting to the database, please try again later")
+        return False
+
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT " + column_name + " FROM " + table_name)
+        values = cursor.fetchall()
+        db.close()
+        return [value[0] for value in values]
+    except Exception as e:
+        print("Error retrieving all values in column " + column_name + " from database table " + table_name + ": "
+              + str(e))
+        db.close()
+        return None

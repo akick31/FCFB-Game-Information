@@ -16,17 +16,18 @@ async def add_ongoing_games(r, config_data, fbs_games, fcs_games, season):
     :param season: The current season
     """
 
-    # Loop through all FBS games and add/update them in the table
+    # Get set of existing game IDs in the table
+    existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games", "game_id"))
+
+    # Loop through all FBS games and add them in the table
     if fbs_games is not None:
         for game in fbs_games:
             if game is not None:
                 # Get information about the game
                 game_info = get_game_information(r, season, "FBS", game, True)
                 if game_info:
-                    print("Trying to add game " + game_info["game_id"] + " between " + game_info["home_team"] + " and " +
-                          game_info["away_team"] + ", checking if already exists...")
                     # Check if the game already exists in the table
-                    if not await check_if_exists_in_table(config_data, "ongoing_games", "game_id", game_info["game_id"]):
+                    if game_info["game_id"] not in existing_game_ids:
                         if game_info["game_id"] is None:
                             print("Game ID is none for FBS game between " + game_info["home_team"] + " and " +
                                   game_info["away_team"])
@@ -36,8 +37,6 @@ async def add_ongoing_games(r, config_data, fbs_games, fcs_games, season):
                             if result:
                                 print("Added FBS game " + game_info["game_id"] + " to the table between " +
                                       game_info["home_team"] + " and " + game_info["away_team"])
-                    else:
-                        print("Game already exists in the table\n")
     # Loop through all FCS games and add/update them in the table
     if fcs_games is not None:
         for game in fcs_games:
@@ -45,10 +44,8 @@ async def add_ongoing_games(r, config_data, fbs_games, fcs_games, season):
                 # Get information about the game
                 game_info = get_game_information(r, season, "FCS", game, True)
                 if game_info:
-                    print("Trying to add game " + game_info["game_id"] + " between " + game_info["home_team"] + " and " +
-                          game_info["away_team"] + ", checking if already exists...")
                     # Check if the game already exists in the table
-                    if not await check_if_exists_in_table(config_data, "ongoing_games", "game_id", game_info["game_id"]):
+                    if game_info["game_id"] not in existing_game_ids:
                         if game_info["game_id"] is None:
                             # If the game ID is None, print an error message
                             print("Game ID is none for FCS game between " + game_info["home_team"] + " and " +
@@ -59,8 +56,6 @@ async def add_ongoing_games(r, config_data, fbs_games, fcs_games, season):
                             if result:
                                 print("Added FCS game " + game_info["game_id"] + " to the table between " +
                                       game_info["home_team"] + " and " + game_info["away_team"])
-                    else:
-                        print("Game already exists in the table\n")
     else:
         print("No new games to add or update in the table")
         return False
