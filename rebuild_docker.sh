@@ -1,21 +1,21 @@
-if docker ps | grep -q FCFB-Cyndaquil-Service; then
-    echo STOPPING CYNDAQUIL SERVICE..
-    docker stop FCFB-Cyndaquil-Service
-    echo CYNDAQUIL SERVICE STOPPED!
+if docker ps | grep -q FCFB-Game-Historian; then
+    echo STOPPING GAME HISTORIAN..
+    docker stop FCFB-Game-Historian
+    echo GAME HISTORIAN STOPPED!
     echo
-    echo REMOVING OLD CYNDAQUIL SERVICE...
-    docker remove FCFB-Cyndaquil-Service
-    echo OLD CYNDAQUIL SERVICE REMOVED!
+    echo REMOVING OLD GAME HISTORIAN...
+    docker remove FCFB-Game-Historian
+    echo OLD GAME HISTORIAN REMOVED!
     echo
 else
-    echo CYNDAQUIL SERVICE NOT RUNNING!
+    echo GAME HISTORIAN NOT RUNNING!
     echo
 fi
-echo BUILDING NEW CYNDAQUIL SERVICE...
-docker build -t "fcfb-cyndaquil-service:Dockerfile" .
-echo NEW CYNDAQUIL SERVICE BUILT!
+echo BUILDING NEW GAME HISTORIAN...
+docker build -t "fcfb-game-historian:Dockerfile" .
+echo NEW GAME HISTORIAN BUILT!
 echo
-echo STARTING NEW CYNDAQUIL SERVICE...
-docker run -d --restart=always --name FCFB-Cyndaquil-Service fcfb-cyndaquil-service:Dockerfile
-echo NEW CYNDAQUIL SERVICE STARTED!
+echo STARTING NEW GAME HISTORIAN...
+docker run -d --restart=always --name FCFB-Game-Historian fcfb-game-historian:Dockerfile
+echo NEW GAME HISTORIAN STARTED!
 echo DONE!

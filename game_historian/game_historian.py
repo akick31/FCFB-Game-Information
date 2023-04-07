@@ -5,13 +5,13 @@ import json
 import asyncio
 import pathlib
 import sys
-sys.path.append("..")
+sys.path.append("")
 
 from game_historian.games.manage_games import add_ongoing_games, update_ongoing_games
 from game_historian.reddit.reddit_administration import login_reddit
 
 
-async def cyndaquil_service(r):
+async def game_historian(r):
     """
     Run Cyndaquil service. Maintain the ongoing games table
 
@@ -32,4 +32,4 @@ if __name__ == '__main__':
 
     r = login_reddit(config_data)
 
-    asyncio.run(cyndaquil_service(r))
+    asyncio.run(game_historian(r))

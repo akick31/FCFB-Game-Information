@@ -20,7 +20,6 @@ async def get_game_info(r, season, subdivison, game, from_wiki):
     :return:
     """
 
-    print("Getting game info")
     game_info = get_game_information(r, season, subdivison, game, from_wiki)
     return game_info
 

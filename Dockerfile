@@ -12,9 +12,7 @@ RUN apt-get install -y default-libmysqlclient-dev
 RUN apt-get install -y libmariadb-dev-compat
 RUN apt-get install -y libmariadb-dev
 RUN pip install -r requirements.txt
-ADD game_historian/main/cyndaquil_service.py /
-ADD game_historian/main/quilava_service.py /
-ADD game_historian/main/typhlosion_service.py /
+ADD game_historian/game_historian.py /
 
 # Run
-CMD [ "python", "/game_historian/main/cyndaquil_service.py" ]
+CMD [ "python", "/game_historian/game_historian.py" ]
