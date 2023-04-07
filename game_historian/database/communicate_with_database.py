@@ -229,3 +229,30 @@ async def get_num_rows_in_table(config_data, table_name):
         print("Error retrieving number of rows in database table " + table_name + ": " + str(e))
         db.close()
         return None
+
+
+async def get_all_rows_in_table(config_data, table_name):
+    """
+    Return all rows in a table
+
+    :param config_data:
+    :param table_name:
+    :return:
+    """
+
+    # Connect to the database
+    db = await connect_to_db(config_data)
+    if db is None:
+        print("Error connecting to the database, please try again later")
+        return False
+
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM " + table_name)
+        rows = cursor.fetchall()
+        db.close()
+        return rows
+    except Exception as e:
+        print("Error retrieving all rows in database table " + table_name + ": " + str(e))
+        db.close()
+        return None

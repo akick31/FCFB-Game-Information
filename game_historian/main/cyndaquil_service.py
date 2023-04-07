@@ -8,8 +8,9 @@ import pathlib
 import sys
 sys.path.append("..")
 
-from game_historian.database.communicate_with_database import retrieve_current_season_from_table, get_num_rows_in_table
-from game_historian.games.manage_games import manage_ongoing_games
+from game_historian.database.communicate_with_database import retrieve_current_season_from_table, get_num_rows_in_table, \
+    get_all_rows_in_table
+from game_historian.games.manage_games import add_ongoing_games, update_ongoing_games
 from game_historian.reddit.reddit_administration import login_reddit
 
 if __name__ == '__main__':
@@ -53,6 +54,10 @@ if __name__ == '__main__':
         # Get number of games in table and verify you need to add more
         num_games_in_table = asyncio.run(get_num_rows_in_table(config_data, "ongoing_games"))
         if num_games_in_table != (len(fbs_games) + len(fcs_games)):
-            asyncio.run(manage_ongoing_games(r, config_data, fbs_games, fcs_games, season))
+            asyncio.run(add_ongoing_games(r, config_data, fbs_games, fcs_games, season))
 
+        # Get all games in table and update them
+        games_in_table = asyncio.run(get_all_rows_in_table(config_data, "ongoing_games"))
+        if games_in_table and games_in_table is not None:
+            asyncio.run(update_ongoing_games(r, config_data, games_in_table, season))
 

@@ -5,9 +5,9 @@ from game_historian.database.communicate_with_database import *
 from game_historian.games.scrape_game_info import get_game_information
 
 
-async def manage_ongoing_games(r, config_data, fbs_games, fcs_games, season):
+async def add_ongoing_games(r, config_data, fbs_games, fcs_games, season):
     """
-    Gathers all ongoing games and adds or updates them in the db.
+    Gathers all ongoing games and adds them in the db.
 
     :param r: The reddit instance
     :param config_data: The config data
@@ -21,7 +21,7 @@ async def manage_ongoing_games(r, config_data, fbs_games, fcs_games, season):
         for game in fbs_games:
             if game is not None:
                 # Get information about the game
-                game_info = get_game_information(r, season, "FBS", game)
+                game_info = get_game_information(r, season, "FBS", game, True)
                 if game_info:
                     # Check if the game already exists in the table
                     if not await check_if_exists_in_table(config_data, "ongoing_games", "game_id", game_info["game_id"]):
@@ -57,7 +57,7 @@ async def manage_ongoing_games(r, config_data, fbs_games, fcs_games, season):
         for game in fcs_games:
             if game is not None:
                 # Get information about the game
-                game_info = get_game_information(r, season, "FCS", game)
+                game_info = get_game_information(r, season, "FCS", game, True)
                 if game_info:
                     # Check if the game already exists in the table
                     if not await check_if_exists_in_table(config_data, "ongoing_games", "game_id", game_info["game_id"]):
@@ -91,5 +91,42 @@ async def manage_ongoing_games(r, config_data, fbs_games, fcs_games, season):
     else:
         print("No new games to add or update in the table")
         return False
+    return True
+
+
+async def update_ongoing_games(r, config_data, games_in_table, season):
+    """
+    Gathers all ongoing games and adds them in the db.
+
+    :param r: The reddit instance
+    :param config_data: The config data
+    :param games_in_table: The list of games
+    :param season: The current season
+    """
+
+    # Loop through all FBS games and add/update them in the table
+    for game in games_in_table:
+        subdivision = game[27]
+        if game is not None:
+            # Get information about the game
+            game_info = get_game_information(r, season, subdivision, game, False)
+            if game_info and game_info["game_id"] is not None:
+                if game_info["is_final"] == 1:
+                    # If the game is final, remove it from the table and add it to games table
+                    result = await remove_from_table(config_data, "ongoing_games", "game_id", game_info["game_id"])
+                    if result:
+                        print("Removed " + subdivision + " game " + game_info["game_id"] +
+                              " from the table between " + game_info["home_team"] + " and " + game_info["away_team"])
+
+                    result = await add_to_table(config_data, "games", "game_id", game_info)
+                    if result:
+                        print("Added " + subdivision + " game " + game_info["game_id"] + " between " +
+                              game_info["home_team"] + " and " + game_info["away_team"] + " to the games table")
+                else:
+                    # If the game already exists, update its information
+                    result = await update_table(config_data, "ongoing_games", "game_id", game_info)
+                    if result:
+                        print("Updated " + subdivision + " game " + game_info["game_id"] +
+                              " in the table between " + game_info["home_team"] + " and " + game_info["away_team"])
     return True
 
