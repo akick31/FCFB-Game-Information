@@ -34,23 +34,6 @@ async def add_ongoing_games(r, config_data, fbs_games, fcs_games, season):
                             if result:
                                 print("Added FBS game " + game_info["game_id"] + " to the table between " +
                                       game_info["home_team"] + " and " + game_info["away_team"])
-                    elif game_info["is_final"] == 1:
-                        # If the game is final, remove it from the table and add it to games table
-                        result = await remove_from_table(config_data, "ongoing_games", "game_id", game_info["game_id"])
-                        if result:
-                            print("Removed FBS game " + game_info["game_id"] + " from the table between " +
-                                  game_info["home_team"] + " and " + game_info["away_team"])
-
-                        result = await add_to_table(config_data, "games", "game_id", game_info)
-                        if result:
-                            print("Added FBS game " + game_info["game_id"] + " between " +
-                                  game_info["home_team"] + " and " + game_info["away_team"] + " to the games table")
-                    else:
-                        # If the game already exists, update its information
-                        result = await update_table(config_data, "ongoing_games", "game_id", game_info)
-                        if result:
-                            print("Updated FBS game " + game_info["game_id"] + " in the table between " +
-                                  game_info["home_team"] + " and " + game_info["away_team"])
 
     # Loop through all FCS games and add/update them in the table
     if fcs_games is not None:
@@ -71,23 +54,6 @@ async def add_ongoing_games(r, config_data, fbs_games, fcs_games, season):
                             if result:
                                 print("Added FCS game " + game_info["game_id"] + " to the table between " +
                                       game_info["home_team"] + " and " + game_info["away_team"])
-                    elif game_info["is_final"] == 1:
-                        # If the game is final, remove it from the table and add it to games table
-                        result = await remove_from_table(config_data, "ongoing_games", "game_id", game_info["game_id"])
-                        if result:
-                            print("Removed FCS game " + game_info["game_id"] + " from the table between " +
-                                  game_info["home_team"] + " and " + game_info["away_team"])
-
-                        result = await add_to_table(config_data, "games", "game_id", game_info)
-                        if result:
-                            print("Added FCS game " + game_info["game_id"] + " between " +
-                                  game_info["home_team"] + " and " + game_info["away_team"] + " to the games table")
-                    else:
-                        # If the game already exists, update its information
-                        result = await update_table(config_data, "ongoing_games", "game_id", game_info)
-                        if result:
-                            print("Updated FCS game " + game_info["game_id"] + " in the table between " +
-                                  game_info["home_team"] + " and " + game_info["away_team"])
     else:
         print("No new games to add or update in the table")
         return False
