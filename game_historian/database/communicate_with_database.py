@@ -98,7 +98,7 @@ async def update_table(config_data, table_name, where_column, values_json):
             if isinstance(value, int) or isinstance(value, float):
                 cursor.execute("UPDATE " + table_name + " SET " + column + "=" + str(value) + " " +
                                "WHERE " + where_column + " = '" + str(where_value) + "'")
-            else:
+            elif value is not None:
                 cursor.execute("UPDATE " + table_name + " SET " + column + "='" + value + "'" +
                                "WHERE " + where_column + " = '" + str(where_value) + "'")
             db.commit()

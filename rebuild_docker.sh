@@ -12,7 +12,7 @@ else
     echo
 fi
 echo BUILDING NEW CYNDAQUIL ADD SERVICE...
-docker build -t "fcfb-cyndaquil-add-service:cyndaquil_add.Dockerfile" .
+docker build -t "fcfb-cyndaquil-add-service:cyndaquil_add.Dockerfile" . -f cyndaquil_add.Dockerfile
 echo NEW CYNDAQUIL ADD SERVICE BUILT!
 echo
 echo STARTING NEW CYNDAQUIL ADD SERVICE...
@@ -34,7 +34,7 @@ else
     echo
 fi
 echo BUILDING NEW CYNDAQUIL UPDATE SERVICE...
-docker build -t "fcfb-cyndaquil-update-service:cyndaquil_update.Dockerfile" .
+docker build -t "fcfb-cyndaquil-update-service:cyndaquil_update.Dockerfile" . -f cyndaquil_update.Dockerfile
 echo NEW CYNDAQUIL UPDATE SERVICE BUILT!
 echo
 echo STARTING NEW CYNDAQUIL UPDATE SERVICE...
