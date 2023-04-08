@@ -1,21 +1,43 @@
-if docker ps | grep -q FCFB-Cyndaquil-Service; then
-    echo STOPPING CYNDAQUIL SERVICE..
-    docker stop FCFB-Cyndaquil-Service
-    echo CYNDAQUIL SERVICE STOPPED!
+if docker ps | grep -q FCFB-Cyndaquil-Add-Service; then
+    echo STOPPING CYNDAQUIL ADD SERVICE..
+    docker stop FCFB-Cyndaquil-Add-Service
+    echo CYNDAQUIL ADD SERVICE STOPPED!
     echo
-    echo REMOVING OLD CYNDAQUIL SERVICE...
-    docker remove FCFB-Cyndaquil-Service
-    echo OLD CYNDAQUIL SERVICE REMOVED!
+    echo REMOVING OLD CYNDAQUIL ADD SERVICE...
+    docker remove FCFB-Cyndaquil-Add-Service
+    echo OLD CYNDAQUIL ADD SERVICE REMOVED!
     echo
 else
-    echo CYNDAQUIL SERVICE NOT RUNNING!
+    echo CYNDAQUIL ADD SERVICE NOT RUNNING!
     echo
 fi
-echo BUILDING NEW CYNDAQUIL SERVICE...
-docker build -t "fcfb-cyndaquil-service:Dockerfile" .
-echo NEW CYNDAQUIL SERVICE BUILT!
+echo BUILDING NEW CYNDAQUIL ADD SERVICE...
+docker build -t "fcfb-cyndaquil-add-service:Dockerfile-Cyndaquil-Add" .
+echo NEW CYNDAQUIL ADD SERVICE BUILT!
 echo
-echo STARTING NEW CYNDAQUIL SERVICE...
-docker run -d --restart=always --name FCFB-Cyndaquil-Service fcfb-cyndaquil-service:Dockerfile
-echo NEW CYNDAQUIL SERVICE STARTED!
+echo STARTING NEW CYNDAQUIL ADD SERVICE...
+docker run -d --restart=always --name FCFB-Cyndaquil-Add-Service fcfb-cyndaquil-add-service:Dockerfile-Cyndaquil-Add
+echo NEW CYNDAQUIL ADD SERVICE STARTED!
+echo DONE!
+
+if docker ps | grep -q FCFB-Cyndaquil-Update-Service; then
+    echo STOPPING CYNDAQUIL UPDATE SERVICE..
+    docker stop FCFB-Cyndaquil-Update-Service
+    echo CYNDAQUIL ADD SERVICE STOPPED!
+    echo
+    echo REMOVING OLD CYNDAQUIL UPDATE SERVICE...
+    docker remove FCFB-Cyndaquil-Update-Service
+    echo OLD CYNDAQUIL UPDATE SERVICE REMOVED!
+    echo
+else
+    echo CYNDAQUIL UPDATE SERVICE NOT RUNNING!
+    echo
+fi
+echo BUILDING NEW CYNDAQUIL UPDATE SERVICE...
+docker build -t "fcfb-cyndaquil-update-service:Dockerfile-Cyndaquil-Update" .
+echo NEW CYNDAQUIL UPDATE SERVICE BUILT!
+echo
+echo STARTING NEW CYNDAQUIL UPDATE SERVICE...
+docker run -d --restart=always --name FCFB-Cyndaquil-Update-Service fcfb-cyndaquil-update-service:Dockerfile-Cyndaquil-Update
+echo NEW CYNDAQUIL UPDATE SERVICE STARTED!
 echo DONE!

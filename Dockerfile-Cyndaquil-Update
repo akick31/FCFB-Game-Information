@@ -13,8 +13,6 @@ RUN apt-get install -y libmariadb-dev-compat
 RUN apt-get install -y libmariadb-dev
 RUN pip install -r requirements.txt
 ADD game_historian/main/cyndaquil_update.py /
-ADD game_historian/main/cyndaquil_add.py /
 
 # Run
 CMD [ "python", "/game_historian/main/cyndaquil_update.py" ]
-CMD [ "python", "/game_historian/main/cyndaquil_add.py" ]
