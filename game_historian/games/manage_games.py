@@ -1,10 +1,10 @@
 import concurrent.futures
-import sys
 import asyncio
+import sys
 sys.path.append("..")
 
-from database.communicate_with_database import *
-from games.scrape_game_info import get_game_information
+from game_historian.database.communicate_with_database import *
+from game_historian.games.scrape_game_info import get_game_information
 
 
 # Define a coroutine function to get game information

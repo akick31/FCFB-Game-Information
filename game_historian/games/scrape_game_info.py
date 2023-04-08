@@ -1,7 +1,5 @@
 from datetime import datetime
 
-import sys
-sys.path.append("..")
 
 def get_game_information(r, season, subdivision, game, from_wiki):
     """
@@ -24,6 +22,8 @@ def get_game_information(r, season, subdivision, game, from_wiki):
 
         timestamp = str(datetime.fromtimestamp(submission.created))
         game_id = get_game_id(submission_body)
+        if game_id is None:
+            game_id = game_link_id
 
     elif not from_wiki and game is not None and game[0] is not None:
         game_id = game[0]

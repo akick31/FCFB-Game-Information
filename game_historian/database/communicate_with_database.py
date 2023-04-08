@@ -1,7 +1,4 @@
-import sys
-sys.path.append("..")
-
-from database.connect_to_database import connect_to_db
+from game_historian.database.connect_to_database import connect_to_db
 
 
 async def add_to_table(config_data, table_name, where_column, values_json):
@@ -106,7 +103,7 @@ async def update_table(config_data, table_name, where_column, values_json):
                                "WHERE " + where_column + " = '" + str(where_value) + "'")
             db.commit()
     except Exception as e:
-        print("Error adding value to database table " + table_name + ": " + str(e))
+        print("Error updating value in database table " + table_name + ": " + str(e))
         db.close()
         return None
 
