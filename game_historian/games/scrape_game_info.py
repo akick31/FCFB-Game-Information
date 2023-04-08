@@ -21,7 +21,7 @@ def get_game_information(r, season, subdivision, game, from_wiki):
         submission_body = submission.selftext
 
         timestamp = str(datetime.fromtimestamp(submission.created))
-        game_id = get_game_id(submission_body)g
+        game_id = get_game_id(submission_body)
 
     elif not from_wiki and game is not None and game[0] is not None:
         game_id = game[0]
