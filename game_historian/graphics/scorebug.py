@@ -430,7 +430,7 @@ async def draw_final_scorebug(config_data, game_id, home_team, away_team, home_s
 
     scorebug_img = proj_dir + "/graphics/scorebugs/" + game_id + ".png"
     img.save(scorebug_img)
-    
+
     return scorebug_img
 
 
