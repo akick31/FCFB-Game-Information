@@ -385,12 +385,10 @@ async def draw_ongoing_scorebug(config_data, game_id, quarter, clock, cur_down_a
     if home_record is not None and away_record is not None:
         img = add_records(img, home_record, away_record)
 
-    scorebug_img = proj_dir + "/graphics/scorebug.png"
+    scorebug_img = proj_dir + "/graphics/scorebugs/" + game_id + ".png"
     img.save(scorebug_img)
 
-    im = pyimgur.Imgur(config_data["imgur_client_id"])
-    uploaded_image = im.upload_image(scorebug_img, title=home_team + " vs " + away_team + " Scorebug")
-    return uploaded_image.link
+    return scorebug_img
 
 
 async def draw_final_scorebug(config_data, game_id, home_team, away_team, home_score, away_score, home_record, away_record,
@@ -430,12 +428,10 @@ async def draw_final_scorebug(config_data, game_id, home_team, away_team, home_s
     if home_record is not None and away_record is not None:
         img = add_records(img, home_record, away_record)
 
-    scorebug_img = proj_dir + "/graphics/scorebug.png"
+    scorebug_img = proj_dir + "/graphics/scorebugs/" + game_id + ".png"
     img.save(scorebug_img)
-
-    im = pyimgur.Imgur(config_data["imgur_client_id"])
-    uploaded_image = im.upload_image(scorebug_img, title="Final " + home_team + " vs " + away_team + " Scorebug")
-    return uploaded_image.link
+    
+    return scorebug_img
 
 
 async def get_scorebug_colors(config_data, home_team, away_team, logger):

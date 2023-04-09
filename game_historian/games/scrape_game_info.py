@@ -109,7 +109,6 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
     if "Game complete" not in submission_body or "Unable to generate play list" in submission_body:
         game_info['is_final'] = 0
         if requester != "plays":
-            sleep(2)
             game_info['scorebug'] = await draw_ongoing_scorebug(config_data, game_id, game_info["quarter"],
                                                                 game_info["clock"], down_and_distance,
                                                                 game_info["possession"], home_team, away_team,
@@ -121,7 +120,6 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
     else:
         game_info['is_final'] = 1
         if requester != "plays":
-            sleep(2)
             game_info['scorebug'] = await draw_final_scorebug(config_data, game_id, home_team, away_team,
                                                               game_info["home_score"], game_info["away_score"],
                                                               game_info["home_record"], game_info["away_record"],
