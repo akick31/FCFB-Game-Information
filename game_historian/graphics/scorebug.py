@@ -389,7 +389,7 @@ async def draw_ongoing_scorebug(config_data, game_id, quarter, clock, cur_down_a
     img.save(scorebug_img)
 
     im = pyimgur.Imgur(config_data["imgur_client_id"])
-    uploaded_image = im.upload_image(scorebug_img, title="Scorebug")
+    uploaded_image = im.upload_image(scorebug_img, title=home_team + " vs " + away_team + " Scorebug")
     return uploaded_image.link
 
 
@@ -434,7 +434,7 @@ async def draw_final_scorebug(config_data, game_id, home_team, away_team, home_s
     img.save(scorebug_img)
 
     im = pyimgur.Imgur(config_data["imgur_client_id"])
-    uploaded_image = im.upload_image(scorebug_img, title="Scorebug")
+    uploaded_image = im.upload_image(scorebug_img, title="Final " + home_team + " vs " + away_team + " Scorebug")
     return uploaded_image.link
 
 
