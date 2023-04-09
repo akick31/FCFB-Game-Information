@@ -41,3 +41,25 @@ echo STARTING NEW CYNDAQUIL UPDATE SERVICE...
 docker run -d --restart=always --name FCFB-Cyndaquil-Update-Service fcfb-cyndaquil-update-service:cyndaquil_update.Dockerfile
 echo NEW CYNDAQUIL UPDATE SERVICE STARTED!
 echo DONE!
+
+if docker ps | grep -q FCFB-Typhlosion-Ongoing-Games-Service; then
+    echo STOPPING TYPHLOSION ONGOING GAMES SERVICE..
+    docker stop FCFB-Typhlosion-Ongoing-Games-Service
+    echo TYPHLOSION ONGOING GAMES SERVICE STOPPED!
+    echo
+    echo REMOVING OLD TYPHLOSION ONGOING GAMES SERVICE...
+    docker remove FCFB-Typhlosion-Ongoing-Games-Service
+    echo OLD TYPHLOSION ONGOING GAMES SERVICE REMOVED!
+    echo
+else
+    echo TYPHLOSION ONGOING GAMES SERVICE NOT RUNNING!
+    echo
+fi
+echo BUILDING NEW TYPHLOSION ONGOING GAMES SERVICE...
+docker build -t "fcfb-typhlosion-ongoing-games-service:typhlosion_ongoing_games.Dockerfile" . -f typhlosion_ongoing_games.Dockerfile
+echo NEW TYPHLOSION ONGOING GAMES SERVICE BUILT!
+echo
+echo STARTING NEW TYPHLOSION ONGOING GAMES SERVICE...
+docker run -d --restart=always --name FCFB-Typhlosion-Ongoing-Games-Service fcfb-typhlosion-ongoing-games-service:typhlosion_ongoing_games.Dockerfile
+echo NEW TYPHLOSION ONGOING GAMES SERVICE STARTED!
+echo DONE!

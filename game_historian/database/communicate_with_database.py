@@ -46,6 +46,54 @@ async def add_to_table(config_data, table_name, where_column, values_json, logge
     return True
 
 
+async def add_to_table_with_conflict(config_data, table_name, where_column, conflict_column, values_json, logger):
+    """
+    Add values to a table with a defined conflict check between two columns
+
+    :param config_data:
+    :param table_name:
+    :param where_column:
+    :param conflict_column:
+    :param values_json:
+    :param logger:
+    :return:
+    """
+
+    # Connect to the database
+    db = await connect_to_db(config_data)
+    if db is None:
+        logger.error("Error connecting to the database, please try again later")
+        return False
+
+    try:
+        cursor = db.cursor()
+
+        # Insert the id of the game
+        where_value = values_json[where_column]
+        cursor.execute("INSERT INTO " + table_name + " (" + where_column + ", " + conflict_column + ") " +
+                       "VALUES ('" + where_value + "', " + str(values_json[conflict_column]) + ")")
+        db.commit()
+
+        for column, value in values_json.items():
+            cursor = db.cursor()
+            if isinstance(value, int) or isinstance(value, float):
+                cursor.execute("UPDATE " + table_name + " SET " + column + "=" + str(value) + " " +
+                               "WHERE " + where_column + " = '" + str(where_value) + "' " +
+                               "ON CONFLICT (" + where_column + ", " + conflict_column + ") DO NOTHING")
+            else:
+                cursor.execute("UPDATE " + table_name + " SET " + column + "='" + value + "'" +
+                               "WHERE " + where_column + " = '" + str(where_value) + "' " +
+                               "ON CONFLICT (" + where_column + ", " + conflict_column + ") DO NOTHING")
+            db.commit()
+    except Exception as e:
+        logger.error("Error adding value to database table " + table_name + ": " + str(e))
+        db.close()
+        return None
+
+    db.close()
+    return True
+
+
 async def remove_from_table(config_data, table_name, where_column, where_value, logger):
     """
     Remove a value from a table
@@ -142,6 +190,38 @@ async def retrieve_row_from_table(config_data, table_name, where_column, where_v
         return row
     except Exception as e:
         logger.error("Error retrieving row from database table " + table_name + ": " + str(e))
+        db.close()
+        return None
+
+
+async def retrieve_value_from_table(config_data, table_name, where_column, where_value, column, logger):
+    """
+    Retrieve a value from a table
+
+    :param config_data:
+    :param table_name:
+    :param where_column:
+    :param where_value:
+    :param column:
+    :param logger:
+    :return:
+    """
+
+    # Connect to the database
+    db = await connect_to_db(config_data)
+    if db is None:
+        logger.error("Error connecting to the database, please try again later")
+        return False
+
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT " + column + " FROM " + table_name +
+                       " WHERE " + where_column + "='" + where_value + "'")
+        value = cursor.fetchone()
+        db.close()
+        return value[0]
+    except Exception as e:
+        logger.error("Error retrieving value from database table " + table_name + ": " + str(e))
         db.close()
         return None
 
