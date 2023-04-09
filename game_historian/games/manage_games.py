@@ -1,5 +1,5 @@
 import concurrent.futures
-import asyncio
+import logging
 import sys
 sys.path.append("..")
 
@@ -24,12 +24,13 @@ async def get_game_info(r, season, subdivison, game, from_wiki):
     return game_info
 
 
-async def add_ongoing_games(r, config_data):
+async def add_ongoing_games(r, config_data, logger):
     """
     Gathers all ongoing games and adds them in the db.
 
     :param r: The reddit instance
     :param config_data: The config data
+    :param logger: The logger
     """
 
     games_wiki = r.subreddit(config_data["subreddit"]).wiki['games']
@@ -58,20 +59,20 @@ async def add_ongoing_games(r, config_data):
             fcs_games.remove(game)
 
     if fbs_games is None and fcs_games is None:
-        print("No games in the wiki to add to table")
+        logger.info("No games in the wiki to add to table")
         return
 
     # Get current season
-    season = await retrieve_current_season_from_table(config_data)
+    season = await retrieve_current_season_from_table(config_data, logger)
     if season is False or season is None:
-        print("Failed to retrieve current season from table")
+        logger.error("Failed to retrieve current season from table")
         return
 
     # Get number of games in table and verify you need to add more
-    num_games_in_table = await get_num_rows_in_table(config_data, "ongoing_games")
+    num_games_in_table = await get_num_rows_in_table(config_data, "ongoing_games", logger)
     if num_games_in_table != (len(fbs_games) + len(fcs_games) - 1):
         for game in fbs_games:
-            if game is not None:
+            if game is not None and "link" in game:
                 game_link = game.split(")|[rerun]")[0].split("[link](")[1]
                 game_link_id = game_link.split("/comments")[1]
 
@@ -81,21 +82,23 @@ async def add_ongoing_games(r, config_data):
                 game_id = get_game_id(submission_body)
 
                 # Loop through all game information and add the games in the table
-                existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games", "game_id"))
+                existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games",
+                                                                                  "game_id", logger))
                 if game_id not in existing_game_ids:
-                    if game_id is None:
-                        print("Game ID is none for the FBS game between " + game_info["home_team"] + " and " + game_info["away_team"])
-                    else:
-                        game_info = await get_game_info(r, season, "FBS", game, True)
-                        if game_info:
-                            result = await add_to_table(config_data, "ongoing_games", "game_id", game_info)
-                            if result:
-                                print("Added FBS game " + game_info["game_id"] + " to the table between " + game_info["home_team"] +
-                                      " and " + game_info["away_team"])
+                    game_info = await get_game_info(r, season, "FBS", game, True)
+                    if game_info:
+                        if game_info["game_id"] is None:
+                            logger.info("Game ID is none for the FBS game between " + game_info["home_team"] + " and "
+                                        + game_info["away_team"])
                         else:
-                            print("Failed to get FBS game information")
+                            result = await add_to_table(config_data, "ongoing_games", "game_id", game_info, logger)
+                            if result:
+                                logger.info("Added FBS game " + game_info["game_id"] + " to the table between "
+                                            + game_info["home_team"] + " and " + game_info["away_team"])
+                            else:
+                                logger.error("Failed to get FBS game information")
                 else:
-                    print("FBS game " + game_id + " already exists in the table")
+                    logger.info("FBS game " + game_id + " already exists in the table")
         for game in fcs_games:
             if game is not None:
                 game_link = game.split(")|[rerun]")[0].split("[link](")[1]
@@ -107,42 +110,45 @@ async def add_ongoing_games(r, config_data):
                 game_id = get_game_id(submission_body)
 
                 # Loop through all game information and add the games in the table
-                existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games", "game_id"))
+                existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games",
+                                                                                  "game_id", logger))
                 if game_id not in existing_game_ids:
-                    if game_id is None:
-                        print("Game ID is none for the FCS game between " + game_info["home_team"] + " and " + game_info["away_team"])
-                    else:
-                        game_info = await get_game_info(r, season, "FCS", game, True)
-                        if game_info:
-                            result = await add_to_table(config_data, "ongoing_games", "game_id", game_info)
-                            if result:
-                                print("Added FCS game " + game_info["game_id"] + " to the table between " + game_info["home_team"] +
-                                      " and " + game_info["away_team"])
+                    game_info = await get_game_info(r, season, "FCS", game, True)
+                    if game_info:
+                        if game_info["game_id"] is None:
+                            logger.info("Game ID is none for the FCS game between " + game_info["home_team"] + " and "
+                                        + game_info["away_team"])
                         else:
-                            print("Failed to get FBS game information")
+                            result = await add_to_table(config_data, "ongoing_games", "game_id", game_info, logger)
+                            if result:
+                                logger.info("Added FCS game " + game_info["game_id"] + " to the table between "
+                                            + game_info["home_team"] + " and " + game_info["away_team"])
+                            else:
+                                logger.error("Failed to get FCS game information")
                 else:
-                    print("FCS game " + game_id + " already exists in the table")
+                    logger.info("FCS game " + game_id + " already exists in the table")
 
         return True
     else:
-        print("No new games to add to table, number of games in table matches number of games in wiki")
+        logger.info("No new games to add to table, number of games in table matches number of games in wiki")
         return False
 
 
-async def update_ongoing_games(r, config_data):
+async def update_ongoing_games(r, config_data, logger):
     """
     Gathers all ongoing games and adds them in the db.
 
     :param r: The reddit instance
     :param config_data: The config data
+    :param logger: The logger
     """
 
-    season = await retrieve_current_season_from_table(config_data)
+    season = await retrieve_current_season_from_table(config_data, logger)
     if season is False or season is None:
-        print("Failed to retrieve current season from table")
+        logger.info("Failed to retrieve current season from table")
         return
 
-    games_in_table = await get_all_rows_in_table(config_data, "ongoing_games")
+    games_in_table = await get_all_rows_in_table(config_data, "ongoing_games", logger)
     if games_in_table and games_in_table is not None:
         # Loop through all games and update them in the table
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
@@ -159,20 +165,23 @@ async def update_ongoing_games(r, config_data):
                 if game_info and game_info["game_id"] is not None:
                     if game_info["is_final"] == 1:
                         # If the game is final, remove it from the table and add it to games table
-                        result = await remove_from_table(config_data, "ongoing_games", "game_id", game_info["game_id"])
+                        result = await remove_from_table(config_data, "ongoing_games", "game_id", game_info["game_id"],
+                                                         logger)
                         if result:
-                            print("Removed " + subdivision + " game " + game_info["game_id"] +
-                                  " from the table between " + game_info["home_team"] + " and " + game_info["away_team"])
+                            logger.info("Removed " + subdivision + " game " + game_info["game_id"] +
+                                        " from the table between " + game_info["home_team"] + " and "
+                                        + game_info["away_team"])
 
-                        result = await add_to_table(config_data, "games", "game_id", game_info)
+                        result = await add_to_table(config_data, "games", "game_id", game_info, logger)
                         if result:
-                            print("Added " + subdivision + " game " + game_info["game_id"] + " between " +
-                                  game_info["home_team"] + " and " + game_info["away_team"] + " to the games table")
+                            logger.info("Added " + subdivision + " game " + game_info["game_id"] + " between " +
+                                        game_info["home_team"] + " and " + game_info["away_team"]
+                                        + " to the games table")
                     else:
                         # If the game already exists, update its information
-                        result = await update_table(config_data, "ongoing_games", "game_id", game_info)
+                        result = await update_table(config_data, "ongoing_games", "game_id", game_info, logger)
                         if result:
-                            print("Updated " + subdivision + " game " + game_info["game_id"] +
-                                  " in the table between " + game_info["home_team"] + " and " + game_info["away_team"])
+                            logger.info("Updated " + subdivision + " game " + game_info["game_id"] +
+                                        " in the table between " + game_info["home_team"] + " and "
+                                        + game_info["away_team"])
         return True
-

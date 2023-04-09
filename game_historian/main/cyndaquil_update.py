@@ -4,6 +4,7 @@ Maintain the ongoing games table
 import json
 import asyncio
 import pathlib
+import logging
 import sys
 sys.path.append("..")
 
@@ -11,16 +12,17 @@ from game_historian.reddit.reddit_administration import login_reddit
 from game_historian.games.manage_games import update_ongoing_games
 
 
-async def cyndaquil_update(r):
+async def cyndaquil_update(r, logger):
     """
     Run Cyndaquil service. Maintain the ongoing games table
 
     :param r:
+    :param logger:
     :return:
     """
 
     while True:
-        await update_ongoing_games(r, config_data)
+        await update_ongoing_games(r, config_data, logger)
 
 
 if __name__ == '__main__':
@@ -29,5 +31,12 @@ if __name__ == '__main__':
         config_data = json.load(config_file)
 
     r = login_reddit(config_data)
+    logger = logging.getLogger("cyndaquil_update_logger")
+    # Add console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] - %(message)s')
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
 
-    asyncio.run(cyndaquil_update(r))
+    asyncio.run(cyndaquil_update(r, logger))
