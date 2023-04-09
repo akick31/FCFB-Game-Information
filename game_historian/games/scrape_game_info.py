@@ -3,7 +3,7 @@ from datetime import datetime
 from game_historian.graphics.scorebug import draw_final_scorebug, draw_ongoing_scorebug
 
 
-async def get_game_information(config_data, r, season, subdivision, game, from_wiki, logger):
+async def get_game_information(config_data, r, season, subdivision, game, requester, logger):
     """
     Get all the game info from the game thread
 
@@ -12,12 +12,12 @@ async def get_game_information(config_data, r, season, subdivision, game, from_w
     :param season:
     :param subdivision:
     :param game:
-    :param from_wiki:
+    :param requester:
     :param logger:
     :return:
     """
 
-    if from_wiki and "link" in game:
+    if requester == "wiki" and "link" in game:
         game_link = game.split(")|[rerun]")[0].split("[link](")[1]
         game_link_id = game_link.split("/comments")[1]
 
@@ -27,7 +27,7 @@ async def get_game_information(config_data, r, season, subdivision, game, from_w
         timestamp = str(datetime.fromtimestamp(submission.created))
         game_id = get_game_id(submission_body)
 
-    elif not from_wiki and game is not None and game[0] is not None:
+    elif requester != "wiki" and game is not None and game[0] is not None:
         game_id = game[0]
         game_link = game[26]
         timestamp = game[28]
@@ -107,17 +107,23 @@ async def get_game_information(config_data, r, season, subdivision, game, from_w
     game_info['waiting_on'] = get_waiting_on(submission_body, home_coach, away_coach, home_team, away_team)
     if "Game complete" not in submission_body or "Unable to generate play list" in submission_body:
         game_info['is_final'] = 0
-        game_info['scorebug'] = await draw_ongoing_scorebug(config_data, game_id, game_info["quarter"],
+        if requester != "plays":
+            game_info['scorebug'] = await draw_ongoing_scorebug(config_data, game_id, game_info["quarter"],
                                                             game_info["clock"], down_and_distance,
                                                             game_info["possession"], home_team, away_team,
                                                             game_info["home_score"], game_info["away_score"],
                                                             game_info["waiting_on"], game_info["home_record"],
                                                             game_info["away_record"], logger)
+        else:
+            game_info['scorebug'] = "None"
     else:
         game_info['is_final'] = 1
-        game_info['scorebug'] = await draw_final_scorebug(config_data, game_id, home_team, away_team,
+        if requester != "plays":
+            game_info['scorebug'] = await draw_final_scorebug(config_data, game_id, home_team, away_team,
                                                           game_info["home_score"], game_info["away_score"],
                                                           game_info["home_record"], game_info["away_record"], logger)
+        else:
+            game_info['scorebug'] = "None"
     return game_info
 
 

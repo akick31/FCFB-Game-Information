@@ -48,7 +48,7 @@ async def add_game_plays(r, config_data, season, subdivision, game, logger):
     :return:
     """
 
-    game_info = await get_game_information(config_data, r, season, subdivision, game, False, logger)
+    game_info = await get_game_information(config_data, r, season, subdivision, game, "plays", logger)
     home_team = game_info['home_team']
     away_team = game_info['away_team']
     gist_url = game_info['gist_url']
