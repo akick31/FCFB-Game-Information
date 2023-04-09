@@ -4,7 +4,7 @@ import sys
 sys.path.append("..")
 
 from game_historian.database.communicate_with_database import *
-from game_historian.games.scrape_game_info import get_game_information
+from game_historian.games.scrape_game_info import get_game_information, get_game_id
 
 
 # Define a coroutine function to get game information
@@ -72,40 +72,56 @@ async def add_ongoing_games(r, config_data):
     if num_games_in_table != (len(fbs_games) + len(fcs_games) - 1):
         for game in fbs_games:
             if game is not None:
-                game_info = await get_game_info(r, season, "FBS", game, True)
+                game_link = game.split(")|[rerun]")[0].split("[link](")[1]
+                game_link_id = game_link.split("/comments")[1]
+
+                submission = r.submission(game_link_id)
+                submission_body = submission.selftext
+
+                game_id = get_game_id(submission_body)
+
                 # Loop through all game information and add the games in the table
                 existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games", "game_id"))
-                if game_info:
-                    if game_info["game_id"] not in existing_game_ids:
-                        if game_info["game_id"] is None:
-                            print("Game ID is none for the FBS game between " + game_info["home_team"] + " and " + game_info["away_team"])
-                        else:
+                if game_id not in existing_game_ids:
+                    if game_id is None:
+                        print("Game ID is none for the FBS game between " + game_info["home_team"] + " and " + game_info["away_team"])
+                    else:
+                        game_info = await get_game_info(r, season, "FBS", game, True)
+                        if game_info:
                             result = await add_to_table(config_data, "ongoing_games", "game_id", game_info)
                             if result:
                                 print("Added FBS game " + game_info["game_id"] + " to the table between " + game_info["home_team"] +
                                       " and " + game_info["away_team"])
-                    else:
-                        print("FBS game " + game_info["game_id"] + " already exists in the table")
+                        else:
+                            print("Failed to get FBS game information")
                 else:
-                    print("Failed to get FBS game information")
+                    print("FBS game " + game_id + " already exists in the table")
         for game in fcs_games:
             if game is not None:
-                game_info = await get_game_info(r, season, "FCS", game, True)
+                game_link = game.split(")|[rerun]")[0].split("[link](")[1]
+                game_link_id = game_link.split("/comments")[1]
+
+                submission = r.submission(game_link_id)
+                submission_body = submission.selftext
+
+                game_id = get_game_id(submission_body)
+
                 # Loop through all game information and add the games in the table
                 existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games", "game_id"))
-                if game_info:
-                    if game_info["game_id"] not in existing_game_ids:
-                        if game_info["game_id"] is None:
-                            print("Game ID is none for the FCS game between " + game_info["home_team"] + " and " + game_info["away_team"])
-                        else:
+                if game_id not in existing_game_ids:
+                    if game_id is None:
+                        print("Game ID is none for the FCS game between " + game_info["home_team"] + " and " + game_info["away_team"])
+                    else:
+                        game_info = await get_game_info(r, season, "FCS", game, True)
+                        if game_info:
                             result = await add_to_table(config_data, "ongoing_games", "game_id", game_info)
                             if result:
                                 print("Added FCS game " + game_info["game_id"] + " to the table between " + game_info["home_team"] +
                                       " and " + game_info["away_team"])
-                    else:
-                        print("FCS game " + game_info["game_id"] + " already exists in the table")
+                        else:
+                            print("Failed to get FBS game information")
                 else:
-                    print("Failed to get FCS game information")
+                    print("FCS game " + game_id + " already exists in the table")
 
         return True
     else:
