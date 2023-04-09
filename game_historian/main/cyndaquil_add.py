@@ -5,6 +5,9 @@ import json
 import asyncio
 import pathlib
 import logging
+from os import remove
+from os.path import exists
+
 import sys
 sys.path.append("..")
 
@@ -31,17 +34,18 @@ if __name__ == '__main__':
         config_data = json.load(config_file)
 
     r = login_reddit(config_data)
-    logger = logging.getLogger("cyndaquil_add_logger")
 
-    # Add console handler
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] - %(message)s')
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+    if exists(proj_dir + '/logs/cyndaquil_add.log'):
+        remove(proj_dir + '/logs/cyndaquil_add.log')
+
+    logging.basicConfig(filename=proj_dir + '/logs/cyndaquil_add.log',
+                        format='[%(asctime)s] [%(levelname)s] - %(message)s',
+                        level=logging.INFO)
+    logger = logging.getLogger("cyndaquil_add_logger")
 
     # Add file handler
     file_handler = logging.FileHandler(proj_dir + '/logs/cyndaquil_add.log', mode='w')
-    logger.addHandler(file_handler)
+    if not logger.hasHandlers():
+        logger.addHandler(file_handler)
 
     asyncio.run(cyndaquil_add(r, logger))
