@@ -388,7 +388,8 @@ async def draw_ongoing_scorebug(config_data, game_id, quarter, clock, cur_down_a
     scorebug_img = proj_dir + "/graphics/scorebugs/" + game_id + ".png"
     img.save(scorebug_img)
 
-    return scorebug_img
+    # Return the path to the scorebug mounted outside of Docker
+    return "/home/apkick/fcfb_scorebugs/" + game_id + ".png"
 
 
 async def draw_final_scorebug(config_data, game_id, home_team, away_team, home_score, away_score, home_record, away_record,
@@ -431,7 +432,8 @@ async def draw_final_scorebug(config_data, game_id, home_team, away_team, home_s
     scorebug_img = proj_dir + "/graphics/scorebugs/" + game_id + ".png"
     img.save(scorebug_img)
 
-    return scorebug_img
+    # Return the path to the scorebug mounted outside of Docker
+    return "/home/apkick/fcfb_scorebugs/" + game_id + ".png"
 
 
 async def get_scorebug_colors(config_data, home_team, away_team, logger):
