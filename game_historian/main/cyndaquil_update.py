@@ -36,16 +36,20 @@ if __name__ == '__main__':
     r = login_reddit(config_data)
 
     if exists(proj_dir + '/logs/cyndaquil_update.log'):
-        remove(proj_dir + '/logs/cyndaquil_add.log')
+        remove(proj_dir + '/logs/cyndaquil_update.log')
 
     logging.basicConfig(filename=proj_dir + '/logs/cyndaquil_update.log',
                         format='[%(asctime)s] [%(levelname)s] - %(message)s',
                         level=logging.INFO)
     logger = logging.getLogger("cyndaquil_add_logger")
 
-    # Add file handler
+    # Add Handlers
     file_handler = logging.FileHandler(proj_dir + '/logs/cyndaquil_update.log', mode='w')
+    stream_handler = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] - %(message)s')
+    stream_handler.setFormatter(formatter)
     if not logger.hasHandlers():
         logger.addHandler(file_handler)
+        logger.addHandler(stream_handler)
 
     asyncio.run(cyndaquil_update(r, logger))
