@@ -5,7 +5,6 @@ RUN mkdir /project
 WORKDIR /project
 COPY ./requirements.txt ./
 COPY ./game_historian/. /game_historian/
-RUN mkdir /game_historian/logs
 
 # Install everything
 RUN apt-get install libmariadb3 libmariadb-dev
