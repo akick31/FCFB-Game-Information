@@ -153,18 +153,10 @@ async def update_ongoing_games(r, config_data, logger):
     games_in_table = await get_all_rows_in_table(config_data, "ongoing_games", logger)
     if games_in_table and games_in_table is not None:
         # Loop through all games and update them in the table
-        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            future_to_game = {}
-            for game in games_in_table:
-                subdivision = game[27]
-                if game is not None:
-                    future = executor.submit(get_game_information, config_data, r, season, subdivision, game, "update",
-                                             logger)
-                    future_to_game[future] = game
-
-            for future in concurrent.futures.as_completed(future_to_game):
-                game = future_to_game[future]
-                game_info = future.result()
+        for game in games_in_table:
+            subdivision = game[27]
+            if game is not None:
+                game_info = await get_game_information(config_data, r, season, subdivision, game, "update", logger)
                 if game_info and game_info["game_id"] is not None:
                     if game_info["is_final"] == 1:
                         # If the game is final, remove it from the table and add it to games table
