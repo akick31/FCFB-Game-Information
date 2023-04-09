@@ -109,19 +109,20 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
         game_info['is_final'] = 0
         if requester != "plays":
             game_info['scorebug'] = await draw_ongoing_scorebug(config_data, game_id, game_info["quarter"],
-                                                            game_info["clock"], down_and_distance,
-                                                            game_info["possession"], home_team, away_team,
-                                                            game_info["home_score"], game_info["away_score"],
-                                                            game_info["waiting_on"], game_info["home_record"],
-                                                            game_info["away_record"], logger)
+                                                                game_info["clock"], down_and_distance,
+                                                                game_info["possession"], home_team, away_team,
+                                                                game_info["home_score"], game_info["away_score"],
+                                                                game_info["waiting_on"], game_info["home_record"],
+                                                                game_info["away_record"], logger)
         else:
             game_info['scorebug'] = "None"
     else:
         game_info['is_final'] = 1
         if requester != "plays":
             game_info['scorebug'] = await draw_final_scorebug(config_data, game_id, home_team, away_team,
-                                                          game_info["home_score"], game_info["away_score"],
-                                                          game_info["home_record"], game_info["away_record"], logger)
+                                                              game_info["home_score"], game_info["away_score"],
+                                                              game_info["home_record"], game_info["away_record"],
+                                                              logger)
         else:
             game_info['scorebug'] = "None"
     return game_info
@@ -170,7 +171,8 @@ def get_home_coach(submission_body):
     :return:
     """
 
-    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body and "**Watch:**" in submission_body:
+    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body \
+            and "**Watch:**" in submission_body:
         home_coach = submission_body.split("___")[0].split("\n")[13].split("|")[1].strip()
     # else there is no game start time or location or watch present
     else:
@@ -185,7 +187,8 @@ def get_away_coach(submission_body):
     :return:
     """
 
-    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body and "**Watch:**" in submission_body:
+    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body \
+            and "**Watch:**" in submission_body:
         away_coach = submission_body.split("___")[0].split("\n")[12].split("|")[1].strip()
     # else there is no game start time or location or watch present
     else:
@@ -458,7 +461,8 @@ def get_home_offensive_playbook(submission_body):
     :return:
     """
 
-    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body and "**Watch:**" in submission_body:
+    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body \
+            and "**Watch:**" in submission_body:
         home_offensive_playbook = submission_body.split("___")[0].split("\n")[13].split("|")[2].strip()
     # else there is no game start time or location or watch present
     else:
@@ -473,7 +477,8 @@ def get_away_offensive_playbook(submission_body):
     :return:
     """
 
-    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body and "**Watch:**" in submission_body:
+    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body \
+            and "**Watch:**" in submission_body:
         away_offensive_playbook = submission_body.split("___")[0].split("\n")[12].split("|")[2].strip()
     # else there is no game start time or location or watch present
     else:
@@ -488,7 +493,8 @@ def get_home_defensive_playbook(submission_body):
     :return:
     """
 
-    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body and "**Watch:**" in submission_body:
+    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body \
+            and "**Watch:**" in submission_body:
         home_defensive_playbook = submission_body.split("___")[0].split("\n")[13].split("|")[3].strip()
     # else there is no game start time or location or watch present
     else:
@@ -503,7 +509,8 @@ def get_away_defensive_playbook(submission_body):
     :return:
     """
 
-    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body and "**Watch:**" in submission_body:
+    if "**Game Start Time:**" in submission_body and "**Location:**" in submission_body \
+            and "**Watch:**" in submission_body:
         away_defensive_playbook = submission_body.split("___")[0].split("\n")[12].split("|")[3].strip()
     # else there is no game start time or location or watch present
     else:
