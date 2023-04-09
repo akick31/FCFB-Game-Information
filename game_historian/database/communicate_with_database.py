@@ -316,6 +316,36 @@ async def get_num_rows_in_table(config_data, table_name, logger):
         return None
 
 
+async def get_num_rows_for_value_in_table(config_data, table_name, column_name, value, logger):
+    """
+    Return the number of rows in a table
+
+    :param config_data:
+    :param table_name:
+    :param column_name:
+    :param value:
+    :param logger:
+    :return:
+    """
+
+    # Connect to the database
+    db = await connect_to_db(config_data)
+    if db is None:
+        logger.error("Error connecting to the database, please try again later")
+        return False
+
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM " + table_name + " WHERE " + column_name + "='" + value + "'")
+        row = cursor.fetchall()
+        db.close()
+        return len(row)
+    except Exception as e:
+        logger.error("Error retrieving number of rows in database table " + table_name + ": " + str(e))
+        db.close()
+        return None
+
+
 async def get_all_rows_in_table(config_data, table_name, logger):
     """
     Return all rows in a table

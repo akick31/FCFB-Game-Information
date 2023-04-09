@@ -2,7 +2,7 @@ import requests
 import sys
 sys.path.append("..")
 
-from game_historian.database.communicate_with_database import get_num_rows_in_table, add_to_table_with_conflict
+from game_historian.database.communicate_with_database import get_num_rows_for_value_in_table, add_to_table_with_conflict
 from game_historian.games.scrape_game_info import get_game_information
 from game_historian.games.win_probability import get_current_win_probability
 
@@ -62,7 +62,8 @@ async def add_game_plays(r, config_data, season, subdivision, game, logger):
     if "-" in plays:
         plays.remove("-")
 
-    num_plays_added = await get_num_rows_in_table(config_data, "game_plays", logger)
+    num_plays_added = await get_num_rows_for_value_in_table(config_data, "game_plays", "game_id", game_info["game_id"],
+                                                            logger)
 
     # If the number of plays is the same as the number of plays in the database, you already added everything to add
     if len(plays) == num_plays_added:

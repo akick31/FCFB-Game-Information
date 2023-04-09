@@ -144,7 +144,7 @@ def calculate_win_probability(win_probability_data):
     """
 
     xgb.set_config(verbosity=0)
-    model_xgb = xgb.XGBRegressor(silent=True)
+    model_xgb = xgb.XGBRegressor(silent=True, verbosity=0)
 
     proj_dir = str(pathlib.Path(__file__).parent.absolute().parent.absolute())
 
