@@ -78,12 +78,10 @@ async def add_to_table_with_conflict(config_data, table_name, where_column, conf
             cursor = db.cursor()
             if isinstance(value, int) or isinstance(value, float):
                 cursor.execute("UPDATE " + table_name + " SET " + column + "=" + str(value) + " " +
-                               "WHERE " + where_column + " = '" + str(where_value) + "' " +
-                               "ON CONFLICT (" + where_column + ", " + conflict_column + ") DO NOTHING")
+                               "WHERE " + where_column + " = '" + str(where_value) + "'")
             else:
                 cursor.execute("UPDATE " + table_name + " SET " + column + "='" + value + "'" +
-                               "WHERE " + where_column + " = '" + str(where_value) + "' " +
-                               "ON CONFLICT (" + where_column + ", " + conflict_column + ") DO NOTHING")
+                               "WHERE " + where_column + " = '" + str(where_value) + "'")
             db.commit()
     except Exception as e:
         logger.error("Error adding value to database table " + table_name + ": " + str(e))
