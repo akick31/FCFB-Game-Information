@@ -1,15 +1,19 @@
 from datetime import datetime
 
+from game_historian.graphics.scorebug import draw_final_scorebug, draw_ongoing_scorebug
 
-def get_game_information(r, season, subdivision, game, from_wiki):
+
+async def get_game_information(config_data, r, season, subdivision, game, from_wiki, logger):
     """
     Get all the game info from the game thread
 
+    :param config_data:
     :param r:
     :param season:
     :param subdivision:
     :param game:
     :param from_wiki:
+    :param logger:
     :return:
     """
 
@@ -96,7 +100,6 @@ def get_game_information(r, season, subdivision, game, from_wiki):
     game_info['tv_channel'] = get_tv_channel(submission_body)
     game_info['start_time'] = get_start_time(submission_body)
     game_info['location'] = get_location(submission_body)
-    game_info['scorebug'] = "/images/scorebug/" + str(game_id) + ".png"
     game_info['home_record'] = get_home_record(submission_title)
     game_info['away_record'] = get_away_record(submission_title)
     game_info['gist_url'] = get_gist_url_from_game_thread(submission_body)
@@ -104,8 +107,17 @@ def get_game_information(r, season, subdivision, game, from_wiki):
     game_info['waiting_on'] = get_waiting_on(submission_body, home_coach, away_coach, home_team, away_team)
     if "Game complete" not in submission_body or "Unable to generate play list" in submission_body:
         game_info['is_final'] = 0
+        game_info['scorebug'] = await draw_ongoing_scorebug(config_data, game_id, game_info["quarter"],
+                                                            game_info["clock"], down_and_distance,
+                                                            game_info["possession"], home_team, away_team,
+                                                            game_info["home_score"], game_info["away_score"],
+                                                            game_info["waiting_on"], game_info["home_record"],
+                                                            game_info["away_record"], logger)
     else:
         game_info['is_final'] = 1
+        game_info['scorebug'] = await draw_final_scorebug(config_data, game_id, home_team, away_team,
+                                                          game_info["home_score"], game_info["away_score"],
+                                                          game_info["home_record"], game_info["away_record"], logger)
     return game_info
 
 

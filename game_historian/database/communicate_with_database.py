@@ -219,6 +219,8 @@ async def retrieve_value_from_table(config_data, table_name, where_column, where
                        " WHERE " + where_column + "='" + where_value + "'")
         value = cursor.fetchone()
         db.close()
+        if value is None:
+            return None
         return value[0]
     except Exception as e:
         logger.error("Error retrieving value from database table " + table_name + ": " + str(e))

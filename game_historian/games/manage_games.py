@@ -8,19 +8,21 @@ from game_historian.games.scrape_game_info import get_game_information, get_game
 
 
 # Define a coroutine function to get game information
-async def get_game_info(r, season, subdivison, game, from_wiki):
+async def get_game_info(config_data, r, season, subdivison, game, from_wiki, logger):
     """
     Gets the game information for a game asynchronously.
 
+    :param config_data:
     :param r:
     :param season:
     :param subdivison:
     :param game:
     :param from_wiki:
+    :param logger:
     :return:
     """
 
-    game_info = get_game_information(r, season, subdivison, game, from_wiki)
+    game_info = await get_game_information(config_data, r, season, subdivison, game, from_wiki, logger)
     return game_info
 
 
@@ -85,7 +87,7 @@ async def add_ongoing_games(r, config_data, logger):
                 existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games",
                                                                                   "game_id", logger))
                 if game_id not in existing_game_ids:
-                    game_info = await get_game_info(r, season, "FBS", game, True)
+                    game_info = await get_game_info(config_data, r, season, "FBS", game, True, logger)
                     if game_info:
                         if game_info["game_id"] is None:
                             logger.info("Game ID is none for the FBS game between " + game_info["home_team"] + " and "
@@ -113,7 +115,7 @@ async def add_ongoing_games(r, config_data, logger):
                 existing_game_ids = set(await get_all_values_in_column_from_table(config_data, "ongoing_games",
                                                                                   "game_id", logger))
                 if game_id not in existing_game_ids:
-                    game_info = await get_game_info(r, season, "FCS", game, True)
+                    game_info = await get_game_info(config_data, r, season, "FCS", game, True, logger)
                     if game_info:
                         if game_info["game_id"] is None:
                             logger.info("Game ID is none for the FCS game between " + game_info["home_team"] + " and "
@@ -156,7 +158,7 @@ async def update_ongoing_games(r, config_data, logger):
             for game in games_in_table:
                 subdivision = game[27]
                 if game is not None:
-                    future = executor.submit(get_game_information, r, season, subdivision, game, False)
+                    future = executor.submit(get_game_information, config_data, r, season, subdivision, game, False, logger)
                     future_to_game[future] = game
 
             for future in concurrent.futures.as_completed(future_to_game):

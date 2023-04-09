@@ -1,3 +1,5 @@
 *.json
 /.idea
 *.log
+*.ttf
+*.png
