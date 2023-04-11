@@ -1,5 +1,3 @@
-# CYNDAQUIL
-# CYNDAQUIL ADD SERVICE
 if docker ps | grep -q FCFB-Cyndaquil-Add-Service; then
     echo STOPPING CYNDAQUIL ADD SERVICE..
     docker stop FCFB-Cyndaquil-Add-Service
@@ -18,11 +16,10 @@ docker build -t "fcfb-cyndaquil-add-service:cyndaquil_add.Dockerfile" . -f cynda
 echo NEW CYNDAQUIL ADD SERVICE BUILT!
 echo
 echo STARTING NEW CYNDAQUIL ADD SERVICE...
-docker run -d --restart=always --name FCFB-Cyndaquil-Add-Service -v /home/apkick/fcfb_scorebugs/:/project/../game_historian/graphics/scorebugs fcfb-cyndaquil-add-service:cyndaquil_add.Dockerfile
+docker run -d --restart=always --name FCFB-Cyndaquil-Add-Service -v /home/apkick/fcfb_scorebugs/:/project/../game_historian/graphics/scorebugs -v /home/apkick/fcfb_win_probability/:/project/../game_historian/graphics/win_probability fcfb-cyndaquil-add-service:cyndaquil_add.Dockerfile
 echo NEW CYNDAQUIL ADD SERVICE STARTED!
 echo DONE!
 
-# CYNDAQUIL UPDATE SERVICE
 if docker ps | grep -q FCFB-Cyndaquil-Update-Service; then
     echo STOPPING CYNDAQUIL UPDATE SERVICE..
     docker stop FCFB-Cyndaquil-Update-Service
@@ -41,13 +38,10 @@ docker build -t "fcfb-cyndaquil-update-service:cyndaquil_update.Dockerfile" . -f
 echo NEW CYNDAQUIL UPDATE SERVICE BUILT!
 echo
 echo STARTING NEW CYNDAQUIL UPDATE SERVICE...
-docker run -d --restart=always --name FCFB-Cyndaquil-Update-Service -v /home/apkick/fcfb_scorebugs/:/project/../game_historian/graphics/scorebugs fcfb-cyndaquil-update-service:cyndaquil_update.Dockerfile
+docker run -d --restart=always --name FCFB-Cyndaquil-Update-Service -v /home/apkick/fcfb_scorebugs/:/project/../game_historian/graphics/scorebugs -v /home/apkick/fcfb_win_probability/:/project/../game_historian/graphics/win_probability fcfb-cyndaquil-update-service:cyndaquil_update.Dockerfile
 echo NEW CYNDAQUIL UPDATE SERVICE STARTED!
 echo DONE!
 
-
-# TYPHLOSION
-# TYPHLOSION ONGOING GAMES
 if docker ps | grep -q FCFB-Typhlosion-Ongoing-Games-Service; then
     echo STOPPING TYPHLOSION ONGOING GAMES SERVICE..
     docker stop FCFB-Typhlosion-Ongoing-Games-Service
@@ -66,6 +60,6 @@ docker build -t "fcfb-typhlosion-ongoing-games-service:typhlosion_ongoing_games.
 echo NEW TYPHLOSION ONGOING GAMES SERVICE BUILT!
 echo
 echo STARTING NEW TYPHLOSION ONGOING GAMES SERVICE...
-docker run -d --restart=always --name FCFB-Typhlosion-Ongoing-Games-Service -v /home/apkick/fcfb_scorebugs/:/project/../game_historian/graphics/scorebugs fcfb-typhlosion-ongoing-games-service:typhlosion_ongoing_games.Dockerfile
+docker run -d --restart=always --name FCFB-Typhlosion-Ongoing-Games-Service -v /home/apkick/fcfb_scorebugs/:/project/../game_historian/graphics/scorebugs -v /home/apkick/fcfb_win_probability/:/project/../game_historian/graphics/win_probability fcfb-typhlosion-ongoing-games-service:typhlosion_ongoing_games.Dockerfile
 echo NEW TYPHLOSION ONGOING GAMES SERVICE STARTED!
 echo DONE!

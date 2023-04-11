@@ -1,5 +1,8 @@
 import requests
 import sys
+
+from game_historian.graphics.win_probability_plot import plot_win_probability
+
 sys.path.append("..")
 
 from game_historian.database.communicate_with_database import get_num_rows_for_value_in_table, add_to_table_with_conflict
@@ -124,6 +127,8 @@ async def add_game_plays(r, config_data, season, subdivision, game, logger):
                                                                     home_score, away_score, game_quarter, clock,
                                                                     ball_location, down, yards_to_go, play,
                                                                     had_first_possession, logger))
+
+            await plot_win_probability(config_data, game_info["game_id"], logger)
 
             play_json = {
                 "game_id": game_info["game_id"],

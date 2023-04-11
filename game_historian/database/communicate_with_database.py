@@ -165,7 +165,7 @@ async def update_table(config_data, table_name, where_column, values_json, logge
 
 async def retrieve_row_from_table(config_data, table_name, where_column, where_value, logger):
     """
-    Update a value in a table
+    Retrieve a row in a table
 
     :param config_data:
     :param table_name:
@@ -399,6 +399,37 @@ async def get_all_values_in_column_from_table(config_data, table_name, column_na
         values = cursor.fetchall()
         db.close()
         return [value[0] for value in values]
+    except Exception as e:
+        logger.error("Error retrieving all values in column " + column_name + " from database table " + table_name
+                     + ": " + str(e))
+        db.close()
+        return None
+
+
+async def get_all_rows_where_value_in_column_from_table(config_data, table_name, column_name, value, logger):
+    """
+    Return all rows where a value is in a column from a table
+
+    :param config_data:
+    :param table_name:
+    :param column_name:
+    :param value:
+    :param logger:
+    :return:
+    """
+
+    # Connect to the database
+    db = await connect_to_db(config_data)
+    if db is None:
+        logger.error("Error connecting to the database, please try again later")
+        return False
+
+    try:
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM " + table_name + " WHERE " + column_name + "='" + value + "'")
+        rows = cursor.fetchall()
+        db.close()
+        return rows
     except Exception as e:
         logger.error("Error retrieving all values in column " + column_name + " from database table " + table_name
                      + ": " + str(e))

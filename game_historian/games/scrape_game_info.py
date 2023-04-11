@@ -2,6 +2,7 @@ from datetime import datetime
 from time import sleep
 
 from game_historian.graphics.scorebug import draw_final_scorebug, draw_ongoing_scorebug
+from game_historian.graphics.win_probability_plot import plot_win_probability
 
 
 async def get_game_information(config_data, r, season, subdivision, game, requester, logger):
@@ -66,6 +67,7 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
         'start_time': 'none',
         'location': 'none',
         'scorebug': 'none',
+        'win_probability_plot': 'none',
         'home_record': 'none',
         'away_record': 'none',
         'gist_url': 'none',
@@ -115,8 +117,10 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
                                                                 game_info["home_score"], game_info["away_score"],
                                                                 game_info["waiting_on"], game_info["home_record"],
                                                                 game_info["away_record"], logger)
+            game_info['win_probability_plot'] = await plot_win_probability(config_data, game_id, logger)
         else:
             game_info['scorebug'] = "None"
+            game_info['win_probability_plot'] = "None"
     else:
         game_info['is_final'] = 1
         if requester != "plays":
@@ -124,8 +128,9 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
                                                               game_info["home_score"], game_info["away_score"],
                                                               game_info["home_record"], game_info["away_record"],
                                                               logger)
+            game_info['win_probability_plot'] = await plot_win_probability(config_data, game_id, logger)
         else:
-            game_info['scorebug'] = "None"
+            game_info['win_probability_plot'] = "None"
     return game_info
 
 
