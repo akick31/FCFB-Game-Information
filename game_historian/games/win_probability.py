@@ -216,4 +216,4 @@ def calculate_win_probability(win_probability_data):
     df_data = pd.DataFrame.from_dict(win_probability_data)
     win_probability = model_xgb.predict(df_data)
 
-    return float(win_probability)*100
+    return float(win_probability)

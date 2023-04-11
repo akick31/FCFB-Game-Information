@@ -22,18 +22,14 @@ async def plot_win_probability(config_data, game_id, logger):
     away_win_probability_arr = []
     for play in game_plays:
         play_number_arr.append(play[1])
-        if play[7] == "home" and "KICKOFF" not in play[14] and play[14] != "PAT" and play[14] != "TWO POINT":
-            home_win_probability_arr.append(play[20])
-            away_win_probability_arr.append(100 - play[20])
-        elif play[7] == "home" and ("KICKOFF" in play[14] or play[14] != "PAT" or play[14] != "TWO POINT"):
-            home_win_probability_arr.append(100 - play[20])
-            away_win_probability_arr.append(play[20])
-        elif play[7] == "away" and "KICKOFF" not in play[14] and play[14] != "PAT" and play[14] != "TWO POINT":
-            home_win_probability_arr.append(100 - play[20])
-            away_win_probability_arr.append(play[20])
-        elif play[7] == "away" and ("KICKOFF" in play[14] or play[14] != "PAT" or play[14] != "TWO POINT"):
-            home_win_probability_arr.append(play[20])
-            away_win_probability_arr.append(100 - play[20])
+        if play[7] == "home":
+            cur_win_probability = play[20] * 100
+            home_win_probability_arr.append(cur_win_probability)
+            away_win_probability_arr.append(100 - cur_win_probability)
+        else:
+            cur_win_probability = play[20] * 100
+            home_win_probability_arr.append(100 - cur_win_probability)
+            away_win_probability_arr.append(cur_win_probability)
 
     play_number_arr = np.array(play_number_arr)
     home_win_probability_arr = np.array(home_win_probability_arr)
