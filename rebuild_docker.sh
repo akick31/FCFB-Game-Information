@@ -1,3 +1,5 @@
+# CYNDAQUIL
+# CYNDAQUIL ADD SERVICE
 if docker ps | grep -q FCFB-Cyndaquil-Add-Service; then
     echo STOPPING CYNDAQUIL ADD SERVICE..
     docker stop FCFB-Cyndaquil-Add-Service
@@ -20,6 +22,7 @@ docker run -d --restart=always --name FCFB-Cyndaquil-Add-Service -v /home/apkick
 echo NEW CYNDAQUIL ADD SERVICE STARTED!
 echo DONE!
 
+# CYNDAQUIL UPDATE SERVICE
 if docker ps | grep -q FCFB-Cyndaquil-Update-Service; then
     echo STOPPING CYNDAQUIL UPDATE SERVICE..
     docker stop FCFB-Cyndaquil-Update-Service
@@ -42,6 +45,9 @@ docker run -d --restart=always --name FCFB-Cyndaquil-Update-Service -v /home/apk
 echo NEW CYNDAQUIL UPDATE SERVICE STARTED!
 echo DONE!
 
+
+# TYPHLOSION
+# TYPHLOSION ONGOING GAMES
 if docker ps | grep -q FCFB-Typhlosion-Ongoing-Games-Service; then
     echo STOPPING TYPHLOSION ONGOING GAMES SERVICE..
     docker stop FCFB-Typhlosion-Ongoing-Games-Service
