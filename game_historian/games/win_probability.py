@@ -38,6 +38,9 @@ def get_win_probability(down, distance, position, margin, seconds_left_game, sec
     :return:
     """
 
+    if seconds_left_game == 0 and play_type != "PAT":
+        return 1 if margin > 0 else (0 if margin < 0 else 0.5)
+
     if play_type == "PAT":
         prob_if_success = get_win_probability(1, 10, 75, -(margin + 1), seconds_left_game, seconds_left_half, half,
                                               1-had_first_possession, -elo_diff_time, 'RUN')
