@@ -20,6 +20,10 @@ def recolor_team_area(img, home_color, away_color):
     :param away_color: The away team color
     """
 
+    if home_color is None or away_color is None:
+        home_color = "#000000"
+        away_color = "#FF0000"
+
     home_hex = home_color.split("#")[1]
     away_hex = away_color.split("#")[1]
 
