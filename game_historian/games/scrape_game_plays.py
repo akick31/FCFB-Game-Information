@@ -122,7 +122,7 @@ async def add_game_plays(r, config_data, season, subdivision, game, logger):
 
             win_probability = str(await get_current_win_probability(config_data, possession, home_team, away_team,
                                                                     home_score, away_score, game_quarter, clock,
-                                                                    ball_location, down, yards_to_go, actual_result,
+                                                                    ball_location, down, yards_to_go, play,
                                                                     had_first_possession, logger))
 
             play_json = {

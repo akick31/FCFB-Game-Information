@@ -92,7 +92,7 @@ def get_win_probability(down, distance, position, margin, seconds_left_game, sec
 
 
 async def get_current_win_probability(config_data, possession, home_team, away_team, home_score, away_score, quarter,
-                                      clock, ball_location, down, yards_to_go, actual_result, had_first_possession,
+                                      clock, ball_location, down, yards_to_go, play, had_first_possession,
                                       logger):
     """
     Get the current win probability for the play
@@ -108,13 +108,13 @@ async def get_current_win_probability(config_data, possession, home_team, away_t
     :param ball_location:
     :param down:
     :param yards_to_go:
-    :param actual_result:
+    :param play:
     :param had_first_possession:
     :param logger:
     :return:
     """
 
-    play_type = str(actual_result)
+    play_type = str(play)
     if possession == "home":
         offense_score = home_score
         defense_score = away_score
