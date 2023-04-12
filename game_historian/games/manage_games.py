@@ -1,11 +1,14 @@
 import concurrent.futures
 import logging
 import sys
+
+from game_historian.games.scrape_game_plays import add_game_plays
+
 sys.path.append("..")
 
 from game_historian.database.communicate_with_database import *
 from game_historian.games.scrape_game_info import get_game_information, get_game_id, get_final_game_information
-
+from game_historian.reddit.search_reddit import search_for_game_thread
 
 # Define a coroutine function to get game information
 async def get_game_info(config_data, r, season, subdivison, game, requester, logger):
@@ -180,4 +183,48 @@ async def update_ongoing_games(r, config_data, logger):
                             logger.info("Updated " + subdivision + " game " + game_info["game_id"] +
                                         " in the table between " + game_info["home_team"] + " and "
                                         + game_info["away_team"])
+        return True
+
+
+async def add_finished_games(r, config_data, logger):
+    """
+    Gathers all finished games and adds them in the db.
+
+    :param r: The reddit instance
+    :param config_data: The config data
+    :param logger: The logger
+    """
+
+    season = 8
+
+    games_in_table = await get_all_rows_where_value_in_column_from_table(config_data, "games", "season", season, logger)
+    if games_in_table and games_in_table is not None:
+        # Loop through all games and update them in the table
+        for game in games_in_table:
+            old_game_id = game[0]
+            winning_team = game[1]
+            losing_team = game[2]
+            subdivision = game[16]
+            winning_score = str(game[17])
+            losing_score = str(game[18])
+            season = str(season)
+
+            game = await search_for_game_thread(config_data, r, winning_team, losing_team, winning_score,
+                                                      losing_score, season, logger)
+
+            if game is False:
+                logger.error("Failed to find game thread for " + winning_team + " vs " + losing_team)
+                continue
+
+            await add_game_plays(r, config_data, season, subdivision, game, "historic", logger)
+
+            game_info = await get_final_game_information(config_data, r, season, subdivision, game,
+                                                         "historic", logger)
+
+            result = await update_table_with_where_value(config_data, "games", "game_id", old_game_id, game_info,
+                                                         logger)
+            if result:
+                logger.info("Added " + subdivision + " game " + game_info["game_id"] + " between " +
+                            game_info["home_team"] + " and " + game_info["away_team"]
+                            + " to the games table")
         return True

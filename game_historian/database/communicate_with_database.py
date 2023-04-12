@@ -163,6 +163,49 @@ async def update_table(config_data, table_name, where_column, values_json, logge
     return True
 
 
+async def update_table_with_where_value(config_data, table_name, where_column, where_value, values_json, logger):
+    """
+    Update a value in a table
+
+    :param config_data:
+    :param table_name:
+    :param where_column:
+    :param where_value
+    :param values_json:
+    :param logger:
+    :return:
+    """
+
+    # Connect to the database
+    db = await connect_to_db(config_data)
+    if db is None:
+        logger.error("Error connecting to the database, please try again later")
+        return False
+
+    try:
+        cursor = db.cursor()
+        cursor.execute("UPDATE " + table_name + " SET " + where_column + "='" + str(values_json["game_id"]) + "' " +
+                       "WHERE " + where_column + " = '" + str(where_value) + "'")
+        db.commit()
+        where_value = values_json["game_id"]
+        for column, value in values_json.items():
+            cursor = db.cursor()
+            if isinstance(value, int) or isinstance(value, float):
+                cursor.execute("UPDATE " + table_name + " SET " + column + "=" + str(value) + " " +
+                               "WHERE " + where_column + " = '" + str(where_value) + "'")
+            elif value is not None:
+                cursor.execute("UPDATE " + table_name + " SET " + column + "='" + value + "'" +
+                               "WHERE " + where_column + " = '" + str(where_value) + "'")
+            db.commit()
+    except Exception as e:
+        logger.error("Error updating value in database table " + table_name + ": " + str(e))
+        db.close()
+        return None
+
+    db.close()
+    return True
+
+
 async def retrieve_row_from_table(config_data, table_name, where_column, where_value, logger):
     """
     Retrieve a row in a table
@@ -230,7 +273,7 @@ async def retrieve_value_from_table(config_data, table_name, where_column, where
 
 async def retrieve_current_season_from_table(config_data, logger):
     """
-    Update a value in a table
+    Retrieve a current season from a table
 
     :param config_data:
     :param logger:
@@ -426,7 +469,11 @@ async def get_all_rows_where_value_in_column_from_table(config_data, table_name,
 
     try:
         cursor = db.cursor()
-        cursor.execute("SELECT * FROM " + table_name + " WHERE " + column_name + "='" + value + "'")
+
+        if isinstance(value, int) or isinstance(value, float):
+            cursor.execute("SELECT * FROM " + table_name + " WHERE " + column_name + "=" + str(value))
+        else:
+            cursor.execute("SELECT * FROM " + table_name + " WHERE " + column_name + "='" + str(value) + "'")
         rows = cursor.fetchall()
         db.close()
         return rows

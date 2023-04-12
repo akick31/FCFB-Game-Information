@@ -25,5 +25,5 @@ async def add_ongoing_game_plays(r, config_data, logger):
         for game in games_in_table:
             subdivision = game[27]
             if game is not None:
-                await add_game_plays(r, config_data, season, subdivision, game, logger)
+                await add_game_plays(r, config_data, season, subdivision, game, "plays", logger)
 

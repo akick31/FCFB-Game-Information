@@ -38,7 +38,7 @@ def parse_data_from_github(gist_url):
     return data
 
 
-async def add_game_plays(r, config_data, season, subdivision, game, logger):
+async def add_game_plays(r, config_data, season, subdivision, game, requester, logger):
     """
     Iterate through the gist and add each line and the win probability to the database
 
@@ -47,11 +47,12 @@ async def add_game_plays(r, config_data, season, subdivision, game, logger):
     :param season:
     :param subdivision:
     :param game:
+    :param requester:
     :param logger:
     :return:
     """
 
-    game_info = await get_game_information(config_data, r, season, subdivision, game, "plays", logger)
+    game_info = await get_game_information(config_data, r, season, subdivision, game, requester, logger)
     home_team = game_info['home_team']
     away_team = game_info['away_team']
     gist_url = game_info['gist_url']

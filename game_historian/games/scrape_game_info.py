@@ -30,6 +30,12 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
         timestamp = str(datetime.fromtimestamp(submission.created))
         game_id = get_game_id(submission_body)
 
+    elif requester == "historic":
+        game_link = game.url
+        submission_body = game.selftext
+        timestamp = str(datetime.fromtimestamp(game.created))
+        game_id = get_game_id(submission_body)
+
     elif requester != "wiki" and game is not None and game[0] is not None:
         game_id = game[0]
         game_link = game[26]
@@ -110,7 +116,7 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
 
     game_plays = await get_all_rows_where_value_in_column_from_table(config_data, "game_plays", "game_id", game_id, logger)
     win_probability = 0.0
-    if game_plays is not None:
+    if game_plays is not None and len(game_plays) > 0:
         if game_plays[-1][7] == "home":
             win_probability = game_plays[-1][20] * 100
         else:
@@ -167,6 +173,12 @@ async def get_final_game_information(config_data, r, season, subdivision, game, 
         submission_body = submission.selftext
 
         timestamp = str(datetime.fromtimestamp(submission.created))
+        game_id = get_game_id(submission_body)
+
+    elif requester == "historic":
+        game_link = game.url
+        submission_body = game.selftext
+        timestamp = str(datetime.fromtimestamp(game.created))
         game_id = get_game_id(submission_body)
 
     elif requester != "wiki" and game is not None and game[0] is not None:
@@ -237,7 +249,7 @@ async def get_final_game_information(config_data, r, season, subdivision, game, 
                                                       game_info["home_record"], game_info["away_record"],
                                                       logger)
     game_info['win_probability_plot'] = await plot_win_probability(config_data, game_id, logger)
-
+    return game_info
 
 def get_game_id(submission_body):
     """
