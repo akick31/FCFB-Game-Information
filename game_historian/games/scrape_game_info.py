@@ -110,7 +110,7 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
 
     game_plays = await get_all_rows_where_value_in_column_from_table(config_data, "game_plays", "game_id", game_id, logger)
     win_probability = 0.0
-    if game_plays is not None:
+    if game_plays is not None and len(game_plays) > 0::
         if game_plays[-1][7] == "home":
             win_probability = game_plays[-1][20] * 100
         else:
