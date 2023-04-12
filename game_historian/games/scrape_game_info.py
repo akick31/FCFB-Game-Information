@@ -237,6 +237,7 @@ async def get_final_game_information(config_data, r, season, subdivision, game, 
                                                       game_info["home_record"], game_info["away_record"],
                                                       logger)
     game_info['win_probability_plot'] = await plot_win_probability(config_data, game_id, logger)
+    return game_info
 
 
 def get_game_id(submission_body):
