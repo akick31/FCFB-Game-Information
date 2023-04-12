@@ -7,7 +7,7 @@ from game_historian.graphics.graphic_utils import *
 
 async def plot_win_probability(config_data, game_id, logger):
     game_plays = await get_all_rows_where_value_in_column_from_table(config_data, "game_plays", "game_id", game_id, logger)
-    if game_plays is None or len(game_plays) > 0::
+    if game_plays is None or len(game_plays) == 0:
         return
 
     home_team = game_plays[0][21]
