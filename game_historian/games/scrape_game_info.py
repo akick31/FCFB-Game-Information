@@ -1,6 +1,7 @@
 from datetime import datetime
 from time import sleep
 
+from game_historian.database.communicate_with_database import get_all_rows_where_value_in_column_from_table
 from game_historian.graphics.scorebug import draw_final_scorebug, draw_ongoing_scorebug
 from game_historian.graphics.win_probability_plot import plot_win_probability
 
@@ -106,7 +107,13 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
     game_info['home_record'] = get_home_record(submission_title)
     game_info['away_record'] = get_away_record(submission_title)
     game_info['gist_url'] = get_gist_url_from_game_thread(submission_body)
-    game_info['win_probability'] = 0.0
+
+    game_plays = await get_all_rows_where_value_in_column_from_table(config_data, "game_plays", "game_id", game_id, logger)
+    win_probability = 0.0
+    if game_plays is not None:
+        win_probability = game_plays[-1][20] * 100
+
+    game_info['win_probability'] = win_probability
     game_info['waiting_on'] = get_waiting_on(submission_body, home_coach, away_coach, home_team, away_team)
     if "Game complete" not in submission_body or "Unable to generate play list" in submission_body:
         game_info['is_final'] = 0
@@ -132,6 +139,100 @@ async def get_game_information(config_data, r, season, subdivision, game, reques
         else:
             game_info['win_probability_plot'] = "None"
     return game_info
+
+
+async def get_final_game_information(config_data, r, season, subdivision, game, requester, logger):
+    """
+    Get all the final game info from the game thread
+
+    :param config_data:
+    :param r:
+    :param season:
+    :param subdivision:
+    :param game:
+    :param requester:
+    :param logger:
+    :return:
+    """
+
+    if requester == "wiki" and "link" in game:
+        game_link = game.split(")|[rerun]")[0].split("[link](")[1]
+        game_link_id = game_link.split("/comments")[1]
+
+        submission = r.submission(game_link_id)
+        submission_body = submission.selftext
+
+        timestamp = str(datetime.fromtimestamp(submission.created))
+        game_id = get_game_id(submission_body)
+
+    elif requester != "wiki" and game is not None and game[0] is not None:
+        game_id = game[0]
+        game_link = game[26]
+        timestamp = game[28]
+
+    else:
+        return False
+
+    game_link_id = game_link.split("/comments")[1]
+
+    submission = r.submission(game_link_id)
+
+    game_info = {
+        'game_id': game_id,
+        'game_link': game_link,
+        'timestamp': timestamp,
+        'season': season,
+        'subdivision': subdivision,
+        'home_team': 'none',
+        'away_team': 'none',
+        'home_coach': 'none',
+        'away_coach': 'none',
+        'home_offensive_playbook': 'none',
+        'away_offensive_playbook': 'none',
+        'home_defensive_playbook': 'none',
+        'away_defensive_playbook': 'none',
+        'home_score': 'none',
+        'away_score': 'none',
+        'tv_channel': 'none',
+        'start_time': 'none',
+        'location': 'none',
+        'scorebug': 'none',
+        'win_probability_plot': 'none',
+        'home_record': 'none',
+        'away_record': 'none',
+        'gist_url': 'none',
+        'is_final': 'none'
+    }
+
+    submission_body = submission.selftext
+    submission_title = submission.title
+
+    home_team = get_home_team(submission_body)
+    away_team = get_away_team(submission_body)
+    home_coach = get_home_coach(submission_body)
+    away_coach = get_away_coach(submission_body)
+    game_info['home_team'] = home_team
+    game_info['away_team'] = away_team
+    game_info['home_coach'] = home_coach
+    game_info['away_coach'] = away_coach
+    game_info['home_offensive_playbook'] = get_home_offensive_playbook(submission_body)
+    game_info['away_offensive_playbook'] = get_away_offensive_playbook(submission_body)
+    game_info['home_defensive_playbook'] = get_home_defensive_playbook(submission_body)
+    game_info['away_defensive_playbook'] = get_away_defensive_playbook(submission_body)
+    game_info['home_score'] = get_home_score(submission_body)
+    game_info['away_score'] = get_away_score(submission_body)
+    game_info['tv_channel'] = get_tv_channel(submission_body)
+    game_info['start_time'] = get_start_time(submission_body)
+    game_info['location'] = get_location(submission_body)
+    game_info['home_record'] = get_home_record(submission_title)
+    game_info['away_record'] = get_away_record(submission_title)
+    game_info['gist_url'] = get_gist_url_from_game_thread(submission_body)
+    game_info['is_final'] = 1
+    game_info['scorebug'] = await draw_final_scorebug(config_data, game_id, home_team, away_team,
+                                                      game_info["home_score"], game_info["away_score"],
+                                                      game_info["home_record"], game_info["away_record"],
+                                                      logger)
+    game_info['win_probability_plot'] = await plot_win_probability(config_data, game_id, logger)
 
 
 def get_game_id(submission_body):

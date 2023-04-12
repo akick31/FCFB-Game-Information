@@ -4,7 +4,7 @@ import sys
 sys.path.append("..")
 
 from game_historian.database.communicate_with_database import *
-from game_historian.games.scrape_game_info import get_game_information, get_game_id
+from game_historian.games.scrape_game_info import get_game_information, get_game_id, get_final_game_information
 
 
 # Define a coroutine function to get game information
@@ -166,7 +166,8 @@ async def update_ongoing_games(r, config_data, logger):
                             logger.info("Removed " + subdivision + " game " + game_info["game_id"] +
                                         " from the table between " + game_info["home_team"] + " and "
                                         + game_info["away_team"])
-
+                        game_info = await get_final_game_information(config_data, r, season, subdivision, game,
+                                                                     "update", logger)
                         result = await add_to_table(config_data, "games", "game_id", game_info, logger)
                         if result:
                             logger.info("Added " + subdivision + " game " + game_info["game_id"] + " between " +
