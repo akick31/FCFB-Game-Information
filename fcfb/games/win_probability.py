@@ -5,7 +5,7 @@ import pandas as pd
 import sys
 sys.path.append("..")
 
-from game_historian.database.communicate_with_database import retrieve_row_from_table, retrieve_value_from_table
+from fcfb.database.communicate_with_database import retrieve_row_from_table, retrieve_value_from_table
 
 data = {
     'down': [4],

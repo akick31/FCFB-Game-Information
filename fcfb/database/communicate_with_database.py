@@ -1,5 +1,5 @@
 import logging
-from game_historian.database.connect_to_database import connect_to_db
+from fcfb.database.connect_to_database import connect_to_db
 
 
 async def add_to_table(config_data, table_name, where_column, values_json, logger):

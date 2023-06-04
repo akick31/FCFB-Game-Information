@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from game_historian.database.communicate_with_database import get_all_rows_where_value_in_column_from_table
-from game_historian.graphics.graphic_utils import *
+from fcfb.database.communicate_with_database import get_all_rows_where_value_in_column_from_table
+from fcfb.graphics.graphic_utils import *
 
 
 async def plot_win_probability(config_data, game_id, logger):

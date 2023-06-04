@@ -2,13 +2,13 @@ import concurrent.futures
 import logging
 import sys
 
-from game_historian.games.scrape_game_plays import add_game_plays
+from fcfb.games.scrape_game_plays import add_game_plays
 
 sys.path.append("..")
 
-from game_historian.database.communicate_with_database import *
-from game_historian.games.scrape_game_info import get_game_information, get_game_id, get_final_game_information
-from game_historian.reddit.search_reddit import search_for_game_thread
+from fcfb.database.communicate_with_database import *
+from fcfb.games.scrape_game_info import get_game_information, get_game_id, get_final_game_information
+from fcfb.reddit.search_reddit import search_for_game_thread
 
 # Define a coroutine function to get game information
 async def get_game_info(config_data, r, season, subdivison, game, requester, logger):

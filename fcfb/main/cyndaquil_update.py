@@ -11,13 +11,13 @@ from os.path import exists
 import sys
 sys.path.append("..")
 
-from game_historian.reddit.reddit_administration import login_reddit
-from game_historian.games.manage_games import add_ongoing_games
+from fcfb.reddit.reddit_administration import login_reddit
+from fcfb.games.manage_games import update_ongoing_games
 
 
-async def cyndaquil_add(r, logger):
+async def cyndaquil_update(r, logger):
     """
-    Run Cyndaquil service. Add to the the ongoing games table
+    Run Cyndaquil service. Maintain the ongoing games table
 
     :param r:
     :param logger:
@@ -25,7 +25,7 @@ async def cyndaquil_add(r, logger):
     """
 
     while True:
-        await add_ongoing_games(r, config_data, logger)
+        await update_ongoing_games(r, config_data, logger)
 
 
 if __name__ == '__main__':
@@ -39,11 +39,11 @@ if __name__ == '__main__':
                         level=logging.INFO)
     logger = logging.getLogger("cyndaquil_add_logger")
 
-    # Add handlers
+    # Add Handlers
     stream_handler = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] - %(message)s')
     stream_handler.setFormatter(formatter)
     if not logger.hasHandlers():
         logger.addHandler(stream_handler)
 
-    asyncio.run(cyndaquil_add(r, logger))
+    asyncio.run(cyndaquil_update(r, logger))

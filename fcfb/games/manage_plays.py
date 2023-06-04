@@ -1,8 +1,8 @@
 import sys
 sys.path.append("..")
 
-from game_historian.database.communicate_with_database import retrieve_current_season_from_table, get_all_rows_in_table
-from game_historian.games.scrape_game_plays import add_game_plays
+from fcfb.database.communicate_with_database import retrieve_current_season_from_table, get_all_rows_in_table
+from fcfb.games.scrape_game_plays import add_game_plays
 
 
 async def add_ongoing_game_plays(r, config_data, logger):

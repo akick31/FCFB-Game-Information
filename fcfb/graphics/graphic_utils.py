@@ -1,7 +1,7 @@
 import json
 import pathlib
 
-from game_historian.database.communicate_with_database import retrieve_value_from_table
+from fcfb.database.communicate_with_database import retrieve_value_from_table
 
 
 def convert_to_rgb(hex):

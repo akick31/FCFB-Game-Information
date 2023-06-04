@@ -1,5 +1,5 @@
-from game_historian.database.communicate_with_database import *
-from game_historian.games.scrape_game_info import *
+from fcfb.database.communicate_with_database import *
+from fcfb.games.scrape_game_info import *
 from datetime import datetime
 
 

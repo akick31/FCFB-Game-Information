@@ -5,17 +5,16 @@ import json
 import asyncio
 import pathlib
 import logging
-from os import remove
-from os.path import exists
 
 import sys
+
 sys.path.append("..")
 
-from game_historian.reddit.reddit_administration import login_reddit
-from game_historian.games.manage_games import update_ongoing_games
+from fcfb.reddit.reddit_administration import login_reddit
+from fcfb.games.manage_plays import add_ongoing_game_plays
 
 
-async def cyndaquil_update(r, logger):
+async def typhlosion_ongoing_games(r, logger):
     """
     Run Cyndaquil service. Maintain the ongoing games table
 
@@ -24,8 +23,7 @@ async def cyndaquil_update(r, logger):
     :return:
     """
 
-    while True:
-        await update_ongoing_games(r, config_data, logger)
+    await add_ongoing_game_plays(r, config_data, logger)
 
 
 if __name__ == '__main__':
@@ -37,7 +35,7 @@ if __name__ == '__main__':
 
     logging.basicConfig(format='[%(asctime)s] [%(levelname)s] - %(message)s',
                         level=logging.INFO)
-    logger = logging.getLogger("cyndaquil_add_logger")
+    logger = logging.getLogger("typhlosion_ongoing_games_logger")
 
     # Add Handlers
     stream_handler = logging.StreamHandler(sys.stdout)
@@ -46,4 +44,4 @@ if __name__ == '__main__':
     if not logger.hasHandlers():
         logger.addHandler(stream_handler)
 
-    asyncio.run(cyndaquil_update(r, logger))
+    asyncio.run(typhlosion_ongoing_games(r, logger))

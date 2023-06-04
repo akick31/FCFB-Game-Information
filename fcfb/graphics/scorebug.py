@@ -3,8 +3,8 @@ import pathlib
 import sys
 import pyimgur
 
-from game_historian.database.communicate_with_database import retrieve_value_from_table
-from game_historian.graphics.graphic_utils import *
+from fcfb.database.communicate_with_database import retrieve_value_from_table
+from fcfb.graphics.graphic_utils import *
 
 sys.path.append("..")
 

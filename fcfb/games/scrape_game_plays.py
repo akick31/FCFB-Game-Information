@@ -1,13 +1,13 @@
 import requests
 import sys
 
-from game_historian.graphics.win_probability_plot import plot_win_probability
+from fcfb.graphics.win_probability_plot import plot_win_probability
 
 sys.path.append("..")
 
-from game_historian.database.communicate_with_database import get_num_rows_for_value_in_table, add_to_table_with_conflict
-from game_historian.games.scrape_game_info import get_game_information
-from game_historian.games.win_probability import get_current_win_probability
+from fcfb.database.communicate_with_database import get_num_rows_for_value_in_table, add_to_table_with_conflict
+from fcfb.games.scrape_game_info import get_game_information
+from fcfb.games.win_probability import get_current_win_probability
 
 
 def parse_data_from_github(gist_url):

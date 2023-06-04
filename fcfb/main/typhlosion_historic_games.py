@@ -10,8 +10,8 @@ import sys
 
 sys.path.append("..")
 
-from game_historian.reddit.reddit_administration import login_reddit
-from game_historian.games.manage_games import add_finished_games
+from fcfb.reddit.reddit_administration import login_reddit
+from fcfb.games.manage_games import add_finished_games
 
 
 async def typhlosion_historic_games(r, logger):

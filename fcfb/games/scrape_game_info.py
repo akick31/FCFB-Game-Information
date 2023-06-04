@@ -1,9 +1,9 @@
 from datetime import datetime
 from time import sleep
 
-from game_historian.database.communicate_with_database import get_all_rows_where_value_in_column_from_table
-from game_historian.graphics.scorebug import draw_final_scorebug, draw_ongoing_scorebug
-from game_historian.graphics.win_probability_plot import plot_win_probability
+from fcfb.database.communicate_with_database import get_all_rows_where_value_in_column_from_table
+from fcfb.graphics.scorebug import draw_final_scorebug, draw_ongoing_scorebug
+from fcfb.graphics.win_probability_plot import plot_win_probability
 
 
 async def get_game_information(config_data, r, season, subdivision, game, requester, logger):
