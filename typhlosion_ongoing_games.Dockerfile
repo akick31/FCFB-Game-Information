@@ -4,8 +4,8 @@ FROM python:3.10
 RUN mkdir /project
 WORKDIR /project
 COPY ./requirements.txt ./
-COPY ./game_historian/. /game_historian/
-RUN mkdir /game_historian/graphics/scorebugs
+COPY fcfb/. /fcfb/
+RUN mkdir /fcfb/graphics/scorebugs
 
 # Install everything
 RUN apt-get install libmariadb3 libmariadb-dev
@@ -13,7 +13,7 @@ RUN apt-get install -y default-libmysqlclient-dev
 RUN apt-get install -y libmariadb-dev-compat
 RUN apt-get install -y libmariadb-dev
 RUN pip install -r requirements.txt
-ADD game_historian/main/typhlosion_ongoing_games.py /
+ADD fcfb/main/typhlosion_ongoing_games.py /
 
 # Run
-CMD [ "python", "/game_historian/main/typhlosion_ongoing_games.py" ]
+CMD [ "python", "/fcfb/main/typhlosion_ongoing_games.py" ]
