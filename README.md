@@ -1,4 +1,4 @@
-# FCFB Game Historian
+# FCFB Game Information
 
 This project is meant to track games throughout Fake College Football. It is a work in progress.
 
@@ -14,3 +14,6 @@ This service keeps track of all games and keeps them up to date in the database,
 ### Typhlosion Service
 This service keeps track of all game plays and keeps them up to date in the database. Every time there is a play, this 
 service will update the database with the new play.
+
+### Porygon Bot
+A Discord bot that will replace the current FCFB Score Bot and allow users to query the database
