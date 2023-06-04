@@ -20,7 +20,7 @@ async def search_for_game_thread(config_data, r, winning_team, losing_team, winn
     for submission in r.subreddit("FakeCollegeFootball").search("[POSTGAME THREAD] " + winning_team + " defeats "
                                                                 + losing_team + ", " + str(winning_score) + "-"
                                                                 + str(losing_score), sort='new'):
-        if "Game Thread" not in submission.link_flair_text:
+        if submission.link_flair_text is None or "Game Thread" not in submission.link_flair_text:
             continue
         home_team = get_home_team(submission.selftext)
         away_team = get_away_team(submission.selftext)
@@ -36,8 +36,12 @@ async def search_for_game_thread(config_data, r, winning_team, losing_team, winn
         if season_end is None or postseason_start is None:
             season_end = datetime.now()
 
-        if not (season_start < game_time < season_end) and not (game_time > postseason_start):
-            continue
+        if not (season_start < game_time < season_end):
+            if postseason_start is not None:
+                if not (game_time > postseason_start):
+                    continue
+            else:
+                continue
 
         if home_team.lower() == winning_team.lower() and away_team.lower() == losing_team.lower() and home_score == winning_score\
                 and away_score == losing_score:

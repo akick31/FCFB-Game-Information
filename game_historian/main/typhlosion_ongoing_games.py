@@ -23,8 +23,7 @@ async def typhlosion_ongoing_games(r, logger):
     :return:
     """
 
-    while True:
-        await add_ongoing_game_plays(r, config_data, logger)
+    await add_ongoing_game_plays(r, config_data, logger)
 
 
 if __name__ == '__main__':
